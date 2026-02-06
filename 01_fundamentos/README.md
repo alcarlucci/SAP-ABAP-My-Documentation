@@ -17,24 +17,31 @@ Fundamentos da linguagem ABAP
 
 ### Inteiro
 
+```abap
 DATA: num1 TYPE i,
       num2 TYPE i.
 
 num1 = 10.
 num2 = 20.
+```
 
 ### Char - texto de 1 posição
 
+```abap
 DATA: sexo TYPE c.
 sexo = 'M'.
+```
 
 ### String - texto 256 caracteres
 
+```abap
 DATA: mensagem TYPE string.
 mensagem = 'Olá Mundo!'.
+```
 
 ### Date - data
 
+```abap
 DATA: aniversario TYPE dats,
       data_atual  TYPE dats.
 
@@ -44,9 +51,11 @@ data_atual = sy-datum.
 
 WRITE: / 'Data aniversário: ', aniversario.
 WRITE: / 'Data atual: ', data_atual.
+```
 
 ### Time - hora
 
+```abap
 DATA: hora_aula  TYPE uzeit,
       hora_atual TYPE uzeit.
 
@@ -56,28 +65,33 @@ hora_atual = sy-uzeit.
 
 WRITE: / 'Hora da aula: ', hora_aula.
 WRITE: / 'Hora atual: ', hora_atual.
+```
 
 ### Decimal - números com casas decimais
 
+```abap
 DATA: valor TYPE p DECIMALS 2.
 valor = '110.50'.
+```
 
 ### Variáveis SY
 
-Variáveis do Servidor
-
+Variáveis do Servidor.
 
 ## Constantes
 
 Um valor que não pode ser modificado
 
+```abap
 CONSTANTS: valor_pi TYPE p DECIMALS 2 VALUE '3.1415',
            type_error TYPE c VALUE 'E'.
+```
 
 ## Estruturas
 
 É um tipo de dado complexo que agrupa campos relacionados (componentes) sob um único nome, como um registro.
 
+```abap
 TYPES: BEGIN OF ty_cliente,
          nome      TYPE string,
          data_nasc TYPE dats,
@@ -93,11 +107,15 @@ cliente-email = 'meuemail@gamil.com'.
 WRITE: / 'Cliente: ', cliente-nome,
        / 'Data Nasc.: ', cliente-data_nasc,
        / 'E-mail: ', cliente-email.
+```
 
 ## Tables
 
-Tabelas de linhas para uma estrutura definida. No exemplo abaixo usando a estrutura definida no tópico anterior ty_cliente e variável cliente dessa estrutura.
+Tabelas de linhas para uma estrutura definida.
 
+No exemplo abaixo usando a estrutura definida no tópico anterior `ty_cliente` e variável `cliente` dessa estrutura.
+
+```abap
 DATA: clientes TYPE TABLE OF ty_cliente.
 
 * incluir dados na tabela clientes a partir da variável
@@ -109,11 +127,13 @@ APPEND VALUE ty_cliente(
   data_nasc = '19761129'
   email = 'meuemail@gamil.com'
 ) TO clientes.
+```
 
 ## Condicionais
 
 ### IF e ELSE
 
+```abap
 DATA: opcao TYPE i.
 opcao = 1.
 
@@ -126,9 +146,11 @@ ENDIF.
 IF opcao >= 1 AND opcao <= 3.
   WRITE: / 'Dentro das opções'.
 ENDIF.
+```
 
 ### CASE
 
+```abap
 DATA opcao TYPE i.
 opcao = 1.
 
@@ -142,37 +164,43 @@ CASE opcao.
   WHEN OTHERS.
     WRITE: / 'Fora das opções'.
 ENDCASE.
+```
 
 ## Estruturas de repetição (loop)
 
 ### LOOP
 
-Percorrer linhas de uma tabela
+Percorrer linhas de uma tabela.
 
+```abap
 TYPES: ty_inteiro TYPE TABLE OF i WITH DEFAULT KEY.
 DATA(tab_inteiros) = VALUE ty_inteiro( ( 1 ) ( 2 ) ( 3 ) ).
 
 LOOP AT tab_inteiros INTO DATA(linha).
   WRITE: / 'Linha: ', linha.
 ENDLOOP.
+```
 
 ### DO
 
-Percorrer **n** vezes
+Percorrer *n* vezes.
 
+```abap
 DATA: n TYPE i VALUE '1'.
 
 DO 10 TIMES.
   WRITE: / 'DO - ', n.
   n = n + 1.
 ENDDO.
+```
 
 ## Tabelas - comandas básicos
 
 ### READ TABLE
 
-Ler uma linha de uma Tabela
+Ler uma linha de uma Tabela.
 
+```abap
 READ TABLE tab_inteiros INTO DATA(rd_linha) INDEX 1.
 WRITE: / 'Read Table - index 1: ', rd_linha.
 
@@ -184,9 +212,13 @@ WRITE: / 'Read Table - cliente Lucas: ',
        / cliente-nome,
        / cliente-data_nasc,
        / cliente-email.
+```
 
-### MOVE-CORRESPONDING - mover valores de uma estrutura para outra
+### MOVE-CORRESPONDING
 
+Mover valores de uma estrutura para outra.
+
+```abap
 DATA: cliente2 TYPE ty_cliente.
 
 MOVE-CORRESPONDING cliente TO cliente2.
@@ -195,3 +227,4 @@ WRITE: / 'cliente -> cliente 2: ', cliente2-nome, cliente2-data_nasc, cliente2-e
 ### CLEAR - limpar valores das variáveis
 CLEAR cliente2.
 WRITE: / 'CLEAR cliente2: ', cliente2-nome.
+```
