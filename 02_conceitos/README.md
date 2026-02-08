@@ -28,8 +28,7 @@ A ***Request*** funciona como um "container" ou pacote que armazena objetos (pro
 **Conceitos Importantes:**
 
 - **Objetos Transportáveis (Z):** Desenvolvimentos customizados que devem seguir o fluxo de transporte entre ambientes;
-- **Objetos Locais (Pacote $TMP):** Objetos criados apenas para testes locais no servidor atual. Eles não pedem Request e não são transportados. O instrutor
-menciona a convenção de nomenclatura "**Y**" para estes objetos em alguns clientes.
+- **Objetos Locais (Pacote $TMP):** Objetos criados apenas para testes locais no servidor atual. Eles não pedem Request e não são transportados. O instrutor menciona a convenção de nomenclatura "**Y**" para estes objetos em alguns clientes.
 
 ### Estrutura: Request vs. Task
 
@@ -50,7 +49,7 @@ Existem diferentes categorias de ordens de transporte, sendo as principais:
 
 ### Prática: Transação SE09 / SE10
 
-A gestão das Requests é feita através das transações **SE09** ou **SE10** (Transport Organizer). Nesta ferramenta é possível:
+A gestão das Requests é feita através das transações **SE09** ou **SE10** (**Transport Organizer**). Nesta ferramenta é possível:
 
 - **Visualizar** Requests (Modificáveis e Liberadas);
 - **Criar** novas Requests e Tasks;
@@ -69,7 +68,7 @@ Analogia Didática: Se a Request é o caminhão que transporta as mudanças, o P
 
 ### Transação SE80 (Object Navigator)
 
-A transação **SE80** é o ambiente central de desenvolvimento. Nela, é possível visualizar, criar e gerenciar pacotes e seus objetos hierarquicamente.
+A transação **SE80** (**Object Navigator**) é o ambiente central de desenvolvimento. Nela, é possível visualizar, criar e gerenciar pacotes e seus objetos hierarquicamente.
 
 ### Estrutura de Pacotes (Boas Práticas)
 
@@ -83,8 +82,9 @@ Os tipos primitivos são a base para o armazenamento de dados. Eles definem se u
 
 Os principais tipos primitivos no SAP ABAP mencionados são:
 
-- **i (Integer):** Números inteiros;
-- **f (Float):** Ponto flutuante (números com casas decimais);
+- **i (Integer):** Números inteiros (4 bytes);
+- **f (Float):** Ponto flutuante (números com casas decimais) (8 bytes);
+- **p (packed number):** número flutuante preciso (16 bytes);
 - **c (Char):** Caractere ou String de tamanho fixo;
 - **n (Numeric Text):** Texto numérico (apenas dígitos, mas tratado como texto);
 - **string:** Cadeia de caracteres de tamanho dinâmico;
@@ -94,7 +94,7 @@ Os principais tipos primitivos no SAP ABAP mencionados são:
 
 ## O que é um Domínio?
 
-O Domínio é um objeto do Dicionário de Dados ABAP (transação **SE11**) que define as características técnicas de um campo. Ele atua como uma camada acima do tipo primitivo, adicionando regras e propriedades específicas.
+O Domínio é um objeto do **Dicionário de Dados ABAP** (transação **SE11**) que define as características técnicas de um campo. Ele atua como uma camada acima do tipo primitivo, adicionando regras e propriedades específicas.
 
 Características definidas pelo Domínio:
 
@@ -106,3 +106,62 @@ Características definidas pelo Domínio:
 - Maiúsculas/Minúsculas (Case Sensitivity).
 
 **Regra Importante:** Um domínio não pode ser utilizado diretamente na declaração de variáveis em um programa. Ele serve como base técnica para a criação de um Elemento de Dados (*Data Element*), que por sua vez será utilizado nas tabelas e programas.
+
+## Elemento de Dados (Data Elements)
+
+O Elemento de Dados (*Data Elements*) descreve o papel desempenhado por um campo em um contexto técnico.
+
+Enquanto o Domínio define as características técnicas (tipo de dado, tamanho, casas decimais); o Elemento de Dados define o significado daquele campo para o negócio e para o usuario final. Ele atua como uma camada intermediária que pode:
+
+- Utilizar um Dominio preexistente;
+- Utilizar um Tipo Primitivo (*Built-in type*) diretamente, sem a necessidade de um domínio;
+
+### Principais Benefícios e Funcionalidades
+
+A utilização de Elementos de Dados traz diversas vantagens para o desenvolvimento e manutenção de software:
+
+- **Reutilização:** Você cria o elemento uma vez e o utiliza em múltiplas tabelas, estruturas e programas;
+- **Manutenção Centralizada:** Se for necessário alterar o tipo de dado ou o tamanho de um campo (por ex. de 1 para 2 caracteres), basta ajustar o Domínio ou o Elemento de Dados, e a alteração sera refletida automaticamente em todos os objetos que o utilizam;
+- **Textos de Exibição (*Field Labels*):** Define os rótulos que aparecem nas telas (cabeçalhos de colunas em ALVs, descrições em telas de seleção). Isso evita a necessidade de tratar nomes de colunas manualmente via *Field Catalog*;
+- **Ajuda de Pesquisa (*Search Help/Match Code*):** Permite associar uma ajuda de pesquisa (F4) para sugerir valores válidos ao usuário;
+- **Documentação (F1):** Permite vincular uma documentação tecnica ou funcional que sera exibida quando o usuario pressionar F1 no campo.
+
+### Criando um Elemento de Dados na Prática (Transação SE11)
+
+Para criar um Elemento de Dados, utilizamos a transação **SE11** (Dicionário de Dados ABAP) ou a **SE80**.
+
+1. Acesse a transação SE11;
+2. Selecione a opção Tipo de dados, insira o nome (iniciando com Z ou Y, ex: ZDLFAJR_EL001) e clique em Criar;
+3. Escolha a opção Elemento de dados;
+4. Na aba Tipo dados, você deve definir a característica técnica:
+    - Domínio: insira o nome do domínio criado anteriormente. O sistema herdara automaticamente o tipo e o tamanho do domínio selecionado;
+    - Tipo incorporado: caso não use domínio, defina diretamente o tipo primitivo (ex: CHAR, INT, DATS);
+5. Na aba Denominação de campo, preencha os textos (Breve, Médio, Longo e Cabeçalho). Estes são os textos que aparecerão para o usuário nas telas do SAP;
+6. Salve em um *Pacote* e uma *Request*, e ative o objeto (Ctrl + F3).
+
+### Utilização em Programas ABAP (Transação SE38)
+
+Diferente do Domínio, o Elemento de Dados pode ser referenciado diretamente na declaração de variáveis e parâmetros em um programa.
+
+#### Exemplo de Declaração
+
+```abap
+* Declaração de variável local
+DATA: gv_status TYPE zdlfajrel_001.
+
+* Declaração de parâmetro de tela (Input do usuário)
+PARAMETERS: p_status TYPE zdlfajrel_001.
+```
+
+#### Comportamento Automático (Match Code)
+
+Se o Elemento de Dados estiver vinculado a um Domínio que possui Valores Fixos (*Value Range*), o SAP gera automaticamente um *Match Code* (F4) no campo de entrada (*PARAMETERS*). Isso exibe para o usuario apenas as opções válidas cadastradas no
+domínio, garantindo a integridade dos dados sem necessidade de codificação adicional.
+
+#### Textos de Seleção
+
+Para que o nome do campo na tela de seleção não apareça como o nome técnico da variável (ex: P_STATUS ), ir para:
+
+- Elementos de texto > Textos de seleção;
+- Ao marcar a opção de "Dicionario", o programa assume automaticamente o texto
+definido no Elemento de Dados.
