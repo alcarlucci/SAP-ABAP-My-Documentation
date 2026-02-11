@@ -13,6 +13,12 @@ Fundamentos da linguagem ABAP
   - Type: tipo; ex.: **Executable Program**
   - Save > Local Object
 
+### Dicas de Produtividade (Atalhos)
+
+- **CTRL + D:** Duplica a linha atual no editor de código.
+- **CTRL + Clique:** Seleciona a palavra inteira onde o cursor está posicionado.
+- **Comentários:** Segundo as boas práticas (*Clean Code*), prefira utilizar aspas duplas (`"`) para comentários, pois permitem comentar na mesma linha do código ou em linhas indentadas, diferentemente do asterisco (`*`) que deve estar na primeira coluna.
+
 ## Variáveis
 
 ### Inteiro

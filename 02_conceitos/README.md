@@ -165,3 +165,51 @@ Para que o nome do campo na tela de seleção não apareça como o nome técnico
 - Elementos de texto > Textos de seleção;
 - Ao marcar a opção de "Dicionario", o programa assume automaticamente o texto
 definido no Elemento de Dados.
+
+## Estruturas (Structure)
+
+Uma estrutura é um tipo de dado complexo que permite agrupar diversos campos (colunas) sob um único nome, de forma didática, pode ser comparada a uma única linha de uma tabela de banco de dados, composta por vários Elementso de Dados.
+
+As estruturas servem para definir um conjunto de colunas (variáveis) agrupadas. Enquanto um Elemento de Dados tipifica um único campo (como o CPF ou o Nome), a Estrutura agrupa esses campos para representar um objeto mais complexo (como os dados completos de um Cliente: Nome, CPF, Endereço, Status).
+
+### Criando Estruturas no Dicionário de Dados (SE11)
+
+A criação de estruturas globais e feita através da transação **SE11** (ou via navegação na **SE80**). Estas estruturas ficam armazenadas no Dicionario de Dados e podem ser reutilizadas por qualquer programa no sistema SAP.
+
+Passo a passo da criação:
+
+- Acesse a transação **SE11**, selecione a opção Tipo de dados, insira o nome (ex: `ZDLFAJR_ES_001`) e clique em Criar. Selecione a opção Estrutura;
+- **Aba Componentes:** aqui você define as colunas:
+  - Componente: Nome do campo (ex: `STATUS`);
+  - Tipo de componente: O Elemento de Dados criado anteriormente (ex: `ZDLFAJR_EL_001`) ou um tipo standard (ex: `CHAR40`);
+- **Campos de Moeda e Quantidade:** Se a estrutura contiver campos de valor monetario (CURR) ou quantidade (QUAN), é obrigatório preencher a aba Campos moeda/quant, indicando a tabela e o campo de referência para a unidade (ex: BRL, USD) ou unidade de medida (ex: KG, UN);
+- **Categoria de Ampliação:** Antes de ativar, vá em Suplementos > Categoria de ampliação. Para fins didáticos iniciais, pode-se definir como "Não ampliável".
+
+### Utilização de Estruturas no Código (SE38)
+
+Existem duas formas principais de declarar e utilizar estruturas em seus programas ABAP (Reports):
+
+1. **Estrutura Global (Dicionário de Dados):** utiliza a estrutura criada na SE11. É a forma recomendada quando o objeto de dados precisa ser padronizado e reutilizado em múltiplos programas. **Vantagem:** Se você adicionar um novo campo na estrutura pela SE11 (ex: `DESCRIPTION`), todos os programas que utilizam essa estrutura reconhecerão o novo campo automaticamente após a ativação.
+2. **Estrutura Local (Declarada no Programa):** a estrutura é definida exclusivamente dentro do código do programa utilizando o comando `TYPES` . Ela só existe dentro daquele report específico. **Desvantagem:** se você precisar usar essa mesma estrutura em outro programa, terá que copiar e colar o código. Se houver uma alteração, terá que ajustar manualmente em todos os programas.
+
+Exemplos:
+
+```abap
+" Usando ESTRUTURAS criadas Dicionário de Dados (reutilizavel em outros programas)
+DATA: ls_status TYPE ZDLFAJRES_001.
+
+ls_status-status = 'A'.
+ls_status-description = 'Em aberto'.
+WRITE: / 'Estrutura do Dicionário de dados: ', ls_status-status, ls_status-description.
+
+" Usando ESTRUTURAS declaradas localmente no código (utilizado apenas nesse programa)
+TYPES: BEGIN OF ty_status,
+        status TYPE zdlfajrel_001,
+        description TYPE c LENGTH 40,
+       END OF ty_status.
+DATA: status TYPE tY_status.
+
+status-status = 'V'.
+status-description = 'Validado'.
+WRITE: / 'Estrutura local no código: ', status-status, status-description.
+```
