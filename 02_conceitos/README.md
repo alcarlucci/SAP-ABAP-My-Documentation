@@ -213,3 +213,73 @@ status-status = 'V'.
 status-description = 'Validado'.
 WRITE: / 'Estrutura local no código: ', status-status, status-description.
 ```
+
+## Tipo Tabela (Table Type)
+
+Diferente de uma estrutura, que armazena apenas uma única linha de dados (um registro), o **Tipo Tabela** (*Table Type*) permite armazenar um conjunto de linhas, ou seja, múltiplos registros baseados em uma estrutura pre-definida.
+
+### Conceito e Criação no Dicionário de Dados
+
+O Tipo Tabela serve para definir uma coleção de dados. Para criá-lo, ele necessita de uma "Categoria de Linha" (Line Type), que geralmente é uma estrutura.
+
+- **Estrutura:** Modelo para uma única linha (ex: colunas Status e Descrição).
+- **Tipo Tabela:** Modelo para armazenar várias dessas linhas.
+
+#### Passo a passo na SE80/SE11
+
+1. Criar um novo objeto do tipo *Table Type*;
+2. Atribuir a "Categoria de Linha" (*Line Type*) a uma estrutura previamente criada;
+3. Salvar em um pacote (para ser transportável) e ativar.
+
+### Utilização no Código ABAP (Sintaxe Tradicional)
+
+Ao declarar variáveis no programa, utilizamos prefixos para facilitar a identificação:
+
+- `ls _` : *Local Structure* (Estrutura Local).
+- `lt _` : *Local Table* (Tabela Local).
+
+Para popular uma tabela interna no modo clássico, preenchemos a estrutura e utilizamos o comando `APPEND` para inserir a linha na tabela.
+
+```abap
+DATA: ls_status TYPE ZDLFAJRES_001, " Usando ESTRUTURA criada no Dicionário de Dados
+      lt_status TYPE ZDLFAJRTT_001. " Usando TABELA criada no Dicionário de Dados
+
+ls_status-status = 'A'.
+ls_status-description = 'Em aberto'.
+WRITE: / 'Conteúdo na Estrutura: ', ls_status-status, ' - ', ls_status-description.
+APPEND ls_status TO lt_status. " adiciona a linha na tabela
+```
+
+### Acessando Dados da Tabela
+
+Existem formas diferentes de ler os dados armazenados:
+
+- Acesso Direto (Table Expression): acessa uma linha específica pelo índice: `WRITE: lt_status[ 1 ]-description.` (Imprime a coluna *description* da primeira linha);
+- Loop: percorre todas as linhas da tabela jogando o conteúdo de cada linha da tabela para a estrutura a cada iteração:
+
+```abap
+LOOP AT lt_status INTO ls_status.
+  WRITE: / ls_status-status, ' - ', ls_status-description.
+ENDLOOP.
+```
+
+### Declaração Inline e Operador VALUE (sintaxe moderna)
+
+Nas versões mais recentes do ABAP, é possível declarar e popular a tabela simultaneamente, reduzindo a quantidade de código. Utilizamos o operador `VALUE` e a declaração `DATA`.
+
+```abap
+" Outra maneira de inserir linhas na tabela diretamente na declaração dela (declara a variavel já atribuindo valores)
+DATA(lt_status_inline) = VALUE ZDLFAJRTT_001(
+  ( status = 'A' description = 'Em Aberto' )
+  ( status = 'V' description = 'Validado' )
+  ( status = 'S' description = 'Em Separação Estoque' )
+  ( status = 'R' description = 'Em Rota' )
+  ( status = 'F' description = 'Finalizado' )
+).
+```
+
+Também é possível utilizar declarações inline para variáveis simples, onde o sistema infere o tipo do dado automaticamente:
+
+- `DATA(lv_texto) = 'Olá Mundo".` (String/Char)
+- `DATA(lv_numero) = 1.` (Inteiro)
+- `DATA(lv_data) = sy-datum.` (Data atual do sistema)

@@ -19,6 +19,13 @@ Fundamentos da linguagem ABAP
 - **CTRL + Clique:** Seleciona a palavra inteira onde o cursor está posicionado.
 - **Comentários:** Segundo as boas práticas (*Clean Code*), prefira utilizar aspas duplas (`"`) para comentários, pois permitem comentar na mesma linha do código ou em linhas indentadas, diferentemente do asterisco (`*`) que deve estar na primeira coluna.
 
+### Transações principais
+
+- **SE38** (*ABAP Editor*): criar/acessar programas em ABAP;
+- **SE09** ou **SE10** (*Transport Organizer*): realizar a gestão das Requests;
+- **SE11** (*ABAP Dictionary*): Dicionário de Dados ABAP;
+- **SE80** (*Object Navigator*): ambiente central de desenvolvimento - criar/gerenciar pacotes e seus objetos hierarquicamente;
+
 ## Variáveis
 
 ### Inteiro
