@@ -25,6 +25,7 @@ Fundamentos da linguagem ABAP
 - **SE09** ou **SE10** (*Transport Organizer*): realizar a gestão das Requests;
 - **SE11** (*ABAP Dictionary*): Dicionário de Dados ABAP;
 - **SE80** (*Object Navigator*): ambiente central de desenvolvimento - criar/gerenciar pacotes e seus objetos hierarquicamente;
+- **SE16** ou **SE16N** (*Data Brower*): navegador do banco de dados - visualização/edição dos dados das tabelas do BD.
 
 ## Variáveis
 

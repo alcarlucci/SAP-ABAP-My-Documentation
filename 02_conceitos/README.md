@@ -283,3 +283,121 @@ Também é possível utilizar declarações inline para variáveis simples, onde
 - `DATA(lv_texto) = 'Olá Mundo".` (String/Char)
 - `DATA(lv_numero) = 1.` (Inteiro)
 - `DATA(lv_data) = sy-datum.` (Data atual do sistema)
+
+## Tabela Transparente (*Database Tables*)
+
+Diferente das **tabelas internas** (*Internal Tables* - memória temporária) vistas anteriormente, que perdem seus dados assim que o programa é encerrado, as **Tabelas Transparentes** (Banco de Dados) servem para armazenar dados reais e físicos no banco de dados do sistema. Assim, iremos entender como criar estruturas que armazenam dados de forma persistente no SAP e como manipulá-los por meio da linguagem **ABAP**.
+
+### Criação da Tabela no Dicionário de Dados (SE11)
+
+A criação é feita através do Dicionário de Dados ABAP. O processo envolve a definição do nome da tabela, seus campos e configurações técnicas.
+
+#### Estrutura e Campos
+
+- **Nome da Tabela:** segue o padrão do cliente (iniciando com `Z` ou `Y` );
+- **Mandante (MANDT):** é o primeiro campo padrão na maioria das tabelas SAP;
+  - Função: o SAP opera com o conceito de "Mandantes" (Clients). Isso permite que varias empresas ou filiais compartilhem o mesmo servidor físico e o mesmo código, mas mantenham seus dados isolados.
+  - O campo `MANDT` garante que os dados gravados no mandante 100 não sejam visíveis no mandante 200, por exemplo.
+- **Chave Primaria (Primary Key):** conjunto de campos que identifica unicamente um registro. Não é permitido salvar dois registros com a mesma chave;
+  - A *flag* **Valores Iniciais** deve ser marcada para impedir chaves nulas.
+- **Elementos de Dados:** define o tipo do dado (Char, Numc, etc.);
+
+#### Configurações Técnicas
+
+Ao ativar a tabela, é necessário definir como o banco de dados gerenciará o armazenamento:
+
+- **Categoria de Dados (Data Class):** define a área física do banco (*Tablespace*);
+  - `APPL0` : **Dados Mestres** (dados que mudam pouco, como configurações).
+  - `APPL1` : **Dados de Movimento** (dados transacionais, como pedidos de venda).
+- **Categoria de Tamanho (Size Category):** Estimativa da quantidade de registros (ex: `0` para até alguns milhares de registros);
+- **Categoria de Ampliação:** define se a tabela pode ser estendida futuramente. Para evitar avisos (*warnings*), pode-se marcar como "Não classificável" ou "Não ampliável" em ambientes de estudo.
+
+### Visualização de Dados (SE16N)
+
+A transação **SE16N** é utilizada para visualizar, inserir e editar registros diretamente nas tabelas do banco de dados (quando permitido). É uma ferramenta essencial para validar se os dados foram gravados corretamente.
+
+### Manipulação de Dados via ABAP (Open SQL)
+
+Para interagir com a tabela transparente dentro de um programa (*Report*), utilizamos comandos **Open SQL**.
+
+#### Declaração
+
+Para trabalhar com os dados no programa, criamos uma tabela interna que espelha a estrutura da tabela do banco, ex.:
+
+```abap
+DATA: ls_status TYPE ZDLFAJRT_001, " estrutura para uma linha da Tabela
+      lt_status TYPE TABLE OF ZDLFAJRT_001. " estrutura para TABELA Status
+```
+
+#### Comando SELECT (Ler Dados)
+
+Busca os dados do banco e os traz para a memória do programa, ex.:
+
+```abap
+" Seleciona dados da Tabela no BD (usando * - todas colunas)
+select *
+  from ZDLFAJRT_001
+  INTO TABLE lt_status.
+
+" Seleciona dados da Tabela no BD (usando nome das colunas - precisa estar na ordem certa das colunas na tabela)
+select status descricao
+  from ZDLFAJRT_001
+  INTO TABLE lt_status.
+
+" Seleciona dados da Tabela no BD (usando nome das colunas - qq ordem usando CORRESPONDING FIELDS)
+select descricao status
+  from ZDLFAJRT_001
+  INTO CORRESPONDING FIELDS OF TABLE lt_status.
+```
+
+#### Comando MODIFY (Inserir ou Atualizar)
+
+O comando MODIFY é versátil: se o registro (chave) já existir, ele atualiza; se não existir, ele insere um novo, ex.:
+
+```abap
+" INSERIR dados na tabela no BD
+ls_status-status = 'A'.
+ls_status-descricao = 'Teste A'.
+MODIFY ZDLFAJRT_001 FROM ls_status.
+```
+
+#### Comando DELETE (Apagar)
+
+Remove registros do banco de dados. Boas práticas: sempre utilize a cláusula `WHERE`, ex.:
+
+```abap
+"exclui os registro(s) dentro da condição WHERE
+delete from zdlfajrt_001
+where status = 'A'.
+
+" PERIGO: exclui TODOS os registros da tabela (sem WHERE)"
+delete from zdlfajrt_001.
+```
+
+### Conclusão (Database Tables)
+
+As **Tabelas Transparentes** são a base da persistência de dados no SAP. O uso correto das chaves primárias garante a integridade dos dados, e os comandos SQL (`SELECT`, `MODIFY`, `DELETE`) permitem que seus programas interajam dinamicamente com esses dados.
+
+## Visões (Views) no SAP
+
+Uma **Visão** (**View**) é uma estrutura lógica que permite visualizar dados de uma ou mais tabelas de banco de dados, sem duplicar
+fisicamente esses dados, definidas no Dicionário de Dados do SAP (transação SE11/SE80).
+
+As visões no SAP possuem, basicamente, duas funcionalidades principais:
+
+- **Projeção (Projection):** permite criar uma visualização de uma única tabela, selecionando apenas colunas específicas e ocultando outras (como dados sensíveis ou técnicos);
+- **Junção (Join):** permite combinar dados de duas ou mais tabelas relacionadas.
+
+Nota: a Visão de Banco de Dados (**Database View**) é somente Leitura, embora existam outros tipos de visões como **Visões de Atualização**.
+
+### Criação de Views
+
+A criação é feita através do Dicionário de Dados ABAP (transação **SE11** ou **SE80**). O processo envolve as configurações:
+
+- **Table/Join Conditions:** seleção das tabelas e definição das relações (join conditions);
+- **View Fields:** seleção das colunas (campos/fields) desejadas;
+- **Selection Conditions:** recurso de filtrar dados nativamente, definindo regras fixas (condições) para os dados exibidos.
+
+### Conclusão (Views)
+
+As Visões de Banco de Dados são ferramentas essenciais para simplificar consultas, garantir segurança através da projeção de colunas e otimizar o desenvolvimento ao realizar junções complexas diretamente no Dicionário de Dados, sem a necessidade de codificação excessiva em ABAP.
