@@ -401,3 +401,78 @@ A criação é feita através do Dicionário de Dados ABAP (transação **SE11**
 ### Conclusão (Views)
 
 As Visões de Banco de Dados são ferramentas essenciais para simplificar consultas, garantir segurança através da projeção de colunas e otimizar o desenvolvimento ao realizar junções complexas diretamente no Dicionário de Dados, sem a necessidade de codificação excessiva em ABAP.
+
+## SM30 - Edit Table Views
+
+A **SM30** é uma transação standard da SAP utilizada para manipular dados de tabelas ou visões. Ela gera uma interface gráfica amigável que permite ao usuário inserir, modificar e deletar registros sem a necessidade de criar um programa do zero.
+
+- Serve para manutenção de dados de parametrização e cadastro;
+- Permite a manipulação de **Eventos** (pontos no tempo). Estes eventos são usados para automatizar lógicas, como gravar data de criação ou usuário que modificou o registro.
+
+### Criando um Diálogo de Atualização
+
+Embora a SM30 seja a transação de execução, a criação do diálogo (tela) ocorre através do Dicionário de Dados (SE11). Para que uma tabela possa ter uma SM30, ela deve possuir uma chave primária definida (além do `MANDT`).
+
+Passo a passo para criação:
+
+1. Acesse a transação **SE11** e informe a tabela desejada;
+2. Utilitários > Gerador de Atualização de Tabelas:
+    - **Grupo de Autorização:** define quem pode acessar; use `&NC&` (sem grupo) para testes ou se não houver restrição de acesso específica;
+    - **Grupo de Funções:** nome do grupo onde os módulos de função da tela serão gerados (geralmente o mesmo nome da tabela);
+    - **Tipo de Atualização:**
+      - *Nível Único:* listagem e edição na mesma tela.
+      - *Dois Níveis:* uma tela de Listagem e outra tela individual para Detalhes/Edição;
+3. Clique em "**Procurar nº tela**" para o SAP sugerir a numeração (geralmente tela 1);
+4. Clique no ícone de **Criar** (*papel branco)* e atribua ao pacote e request adequados.
+
+### Customização da Tela
+
+Após gerar o diálogo (tela), é possível personalizar a aparência da tela gerada. Isso pode ser feito via **Layout Gráfico** (*Screen Painter*) ou pela **Lista de Elementos**
+(caso o editor gráfico não esteja disponível no ambiente).
+
+Alguns ajustes possíveis:
+
+- Textos de Cabeçalho: Alterar nomes técnicos (ex: CHAR45 ) para descrições amigáveis;
+- Dropdowns (Caixa de Listagem): se o Domínio do campo possuir valores fixos, a SM30 cria automaticamente um combo box. É possível configurar para exibir apenas o texto ou a chave + texto;
+- Tamanho dos Campos: ajuste da largura visual (*Vis. Length*) para melhorar a estética da tabela;
+- Atributos: configurações de somente leitura, obrigatoriedade, entre outros.
+
+### Conclusão SM30
+
+A SM30 cria uma interface (tela) para o usuário que é um reflexo direto do banco de dados. Qualquer alteração feita nela (inserção, alteração ou exclusão) e efetivada na tabela transparente (*Database Table*).
+
+## Ajuda de Pesquisa (*Search Helps*)
+
+A **Ajuda de Pesquisa**, tecnicamente chamadas de ***Search Helps*** e popularmente conhecidas no ecossistema SAP como ***Matchcodes*** (acionados pela tecla F4), é um objeto do Dicionário de Dados (SE11) que tem como objetivo auxiliar o usuário no preenchimento de campos de entrada. Ela fornece :
+
+- **Sugestões de preenchimento:** lista de valores possíveis;
+- **Validação:** Garante que o dado inserido existe na base de dados ou lista permitida.
+
+### Formas de Implementação
+
+Existem diferentes formar de gerar essa ajuda ao usuário:
+
+- **Via Domínio (Valores Fixos):** útil para Listas estáticas e pequenas (ex: Status "Aberto", "Fechado"). O sistema gera o *matchcode* automaticamente com base nos "Valores Individuais" configurados no domínio;
+- **Via Objeto Search Help:** permite buscas dinâmicas em tabelas do banco de dados, oferecendo maior flexibilidade e opções de filtragem.
+
+### Contextos de Atribuição
+
+É preciso definir onde vincular a Ajuda de Pesquisa. Existem três contextos principais:
+
+1. **No Domínio:** restrito a valores fixos;
+2. **Na Tabela (Coluna):** a ajuda de pesquisa funciona apenas para aquela tabela específica. Indicado quando a regra de busca muda dependendo da tabela;
+3. **No Elemento de Dados:** a ajuda de pesquisa é herdada automaticamente em qualquer Lugar (tabelas, estruturas, programas) onde este elemento de dados for utilizado.
+
+**Recomendação:** sempre que a característica do dado for constante (sempre buscará na mesma tabela mestre), vincule a *Search Help* ao **Elemento de Dados** para garantir reutilização e padronização.
+
+### Passo a Passo Prático
+
+Criação de uma *Elementary Search Help*:
+
+- **Criação:** transação SE11 > Search Help;
+- **Método de Seleção:** definição da tabela de onde os dados virão;
+- **Parâmetros:**
+  - **IMP (Import):** parâmetros que recebem valores para filtrar a busca;
+  - **EXP (Export):** o valor que será retornado para o campo na tela (ex: o código da atividade);
+  - **LPos/SPos:** posições de exibição na Lista de resultados e na Janela de seleção;
+- **Vinculação:** acessar o Elemento de Dados > aba "Caract. Adicionais" (*Further Characteristics*) > atribuição da *Search Help* criada, mapeando o parâmetro de exportação.

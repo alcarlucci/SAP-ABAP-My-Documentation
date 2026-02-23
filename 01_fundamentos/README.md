@@ -25,7 +25,12 @@ Fundamentos da linguagem ABAP
 - **SE09** ou **SE10** (*Transport Organizer*): realizar a gestão das Requests;
 - **SE11** (*ABAP Dictionary*): Dicionário de Dados ABAP;
 - **SE80** (*Object Navigator*): ambiente central de desenvolvimento - criar/gerenciar pacotes e seus objetos hierarquicamente;
-- **SE16** ou **SE16N** (*Data Brower*): navegador do banco de dados - visualização/edição dos dados das tabelas do BD.
+- **SE16** ou **SE16N** (*Data Brower*): navegador do banco de dados - visualização/edição dos dados das tabelas do BD;
+- **SM30 (Edit Table Views):** criação de interfaces para visualização e manipulação de dados de tabelas e views (visões).
+
+### Limpeza de Cache do HANA/SAP
+
+Alterações na SE11 podem não refletir imediatamente na SE16 devido ao buffer. Para contornar isso, utiliza-se um programa para Limpar o buffer **ALV/Dicionário**. O nome técnico padrão do programa para Limpeza de buffer de ALV/Field Catalog geralmente é `BALVBUFDEL` ou comandos de sistema equivalentes.
 
 ## Variáveis
 
