@@ -15,22 +15,36 @@ Fundamentos da linguagem ABAP
 
 ### Dicas de Produtividade (Atalhos)
 
-- **CTRL + D:** Duplica a linha atual no editor de código.
-- **CTRL + Clique:** Seleciona a palavra inteira onde o cursor está posicionado.
-- **Comentários:** Segundo as boas práticas (*Clean Code*), prefira utilizar aspas duplas (`"`) para comentários, pois permitem comentar na mesma linha do código ou em linhas indentadas, diferentemente do asterisco (`*`) que deve estar na primeira coluna.
+- **CTRL + D:** Duplica a linha atual no editor de código;
+- **CTRL + Clique:** Seleciona a palavra inteira onde o cursor está posicionado;
+- **Comentários:** Segundo as boas práticas (*Clean Code*), prefira utilizar aspas duplas (`"`) para comentários, pois permitem comentar na mesma linha do código ou em linhas indentadas, diferentemente do asterisco (`*`) que deve estar na primeira coluna;
+- **Documentação (F1):** utilize a tecla `F1` sobre um comando para ver a documentação oficial da SAP e exemplos de sintaxe.
 
-### Transações principais
+### Limpeza de Cache do HANA/SAP
+
+Alterações na SE11 podem não refletir imediatamente na SE16 devido ao buffer. Para contornar isso, utiliza-se um programa para Limpar o buffer **ALV/Dicionário**. O nome técnico padrão do programa para Limpeza de buffer de ALV/Field Catalog geralmente é `BALVBUFDEL` ou comandos de sistema equivalentes.
+
+## Transações
+
+As Transações funcionam como atalhos de navegação. Cada transação possui um **Código de Transação** (*T-Code*) único que, ao ser digitado na caixa de comando, direciona o usuário para uma tela específica, seja ela um relatório, uma configuração ou um ambiente de desenvolvimento.
+
+### Principais Transações
 
 - **SE38** (*ABAP Editor*): criar/acessar programas em ABAP;
 - **SE09** ou **SE10** (*Transport Organizer*): realizar a gestão das Requests;
 - **SE11** (*ABAP Dictionary*): Dicionário de Dados ABAP;
 - **SE80** (*Object Navigator*): ambiente central de desenvolvimento - criar/gerenciar pacotes e seus objetos hierarquicamente;
-- **SE16** ou **SE16N** (*Data Brower*): navegador do banco de dados - visualização/edição dos dados das tabelas do BD;
-- **SM30 (Edit Table Views):** criação de interfaces para visualização e manipulação de dados de tabelas e views (visões).
-
-### Limpeza de Cache do HANA/SAP
-
-Alterações na SE11 podem não refletir imediatamente na SE16 devido ao buffer. Para contornar isso, utiliza-se um programa para Limpar o buffer **ALV/Dicionário**. O nome técnico padrão do programa para Limpeza de buffer de ALV/Field Catalog geralmente é `BALVBUFDEL` ou comandos de sistema equivalentes.
+- **SE16**; **SE16N**; **SE16H** (*Data Brower*): navegador do banco de dados - visualização/edição dos dados das tabelas do BD;
+- **SM30** (*Edit Table Views*): criação de interfaces para visualização e manipulação de dados de tabelas e views (visões);
+- **SE24** (*Class Builder*): criação e manutenção de Classes (OOP);
+- **SE37** (*Function Builder*): criação e testes de Módulos de Função; configuração de *Remote Call Functions* (**RFC**) para criação de APIs;
+- **SM36** (*Define Job*): criação de Jobs (processos executados em segundo plano/*background* - *server side*);
+- **SM37** (*Simple Job Selection*): monitorar a execução e visualizar os logs (*spools*) dos Jobs;
+- **SM66** (*Work Processes*): exibe os processos em execução no servidor SAP identificando os usuários;
+- **SM12** (*Select Lock Entries*): monitora bloqueios de tabelas/registros no Banco de Dados;
+- **DBACOCKPIT** (*DBA Cockpit - System Configuration Maintenance*): painel de administração do Banco de Dados;
+- **SAT** (*Runtime Analysis*): análise de performance na execução de um programa;
+- **SE93** (*Maintain Transaction*): criação de Transações.
 
 ## Variáveis
 

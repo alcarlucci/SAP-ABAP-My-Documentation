@@ -476,3 +476,19 @@ Criação de uma *Elementary Search Help*:
   - **EXP (Export):** o valor que será retornado para o campo na tela (ex: o código da atividade);
   - **LPos/SPos:** posições de exibição na Lista de resultados e na Janela de seleção;
 - **Vinculação:** acessar o Elemento de Dados > aba "Caract. Adicionais" (*Further Characteristics*) > atribuição da *Search Help* criada, mapeando o parâmetro de exportação.
+
+## Criando uma Transação (SE93)
+
+Para disponibilizar um programa desenvolvido (como um relatório) para o usuário final criamos uma transação personalizada.
+
+### Passo a passo na transação SE93
+
+1. Acesse a transação **SE93**;
+2. Insira o código da nova transação (geralmente iniciando com `Z` ou `Y`);
+3. Clique em "Criar" e insira uma descrição breve;
+4. **Tipo de Objeto de início:** para relatórios comuns utilize **Program and selection screen** (Programa com tela de seleção);
+5. **Programa:** vincule o nome do programa ABAP que você criou;
+6. **Opções de Compatibilidade de GUI:** marque as opções SAPGUI for Windows; Java; HTML;
+7. Salve a transação, atribuindo-a ao seu Pacote e Request de transporte.
+
+Após esse processo, o programa pode ser executado diretamente digitando o novo código criado na caixa de comando do SAP.
