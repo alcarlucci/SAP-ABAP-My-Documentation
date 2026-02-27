@@ -44,6 +44,8 @@ As Transações funcionam como atalhos de navegação. Cada transação possui u
 - **SM12** (*Select Lock Entries*): monitora bloqueios de tabelas/registros no Banco de Dados;
 - **DBACOCKPIT** (*DBA Cockpit - System Configuration Maintenance*): painel de administração do Banco de Dados;
 - **SAT** (*Runtime Analysis*): análise de performance na execução de um programa;
+- **SE61** (*Edit Documents*): criar e editar arquivos de documentações para serem linkados na documentação dos objetos no SAP;
+- **SE91** (Message Maintenance): criação e manutenção de Classes de Mensagens;
 - **SE93** (*Maintain Transaction*): criação de Transações.
 
 ## Variáveis
