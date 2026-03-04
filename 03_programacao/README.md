@@ -341,3 +341,219 @@ AT SELECTION-SCREEN.
     MESSAGE 'Clicou no botão FC02 da Toolbar' TYPE 'I'.
   ENDIF.
 ```
+
+## *Reports* ALV
+
+O **ALV** (*Application List Viewer*) é uma ferramenta padrão do SAP utilizada para a exibição de Listas e Relatórios de forma estruturada. Oferece funcionalidades nativas como filtros, ordenação, somatórios e exportação para Excel.
+
+### Evolução dos Relatórios no SAP
+
+- **Comando WRITE:** método antigo de escrita em tela. Pouco utilizado para relatórios corporativos;
+- **ALV** (funções e OOP): o padrão atual para ambientes SAP *ECC*. Implementado via módulos de função ou, preferencialmente, via OOP;
+- **SAP Fiori e CDS Views:** no ambiente SAP *S/4HANA*, o conceito de ALV é substituído por aplicativos *Fiori* e *CDS Views*. Embora os ALVs clássicos continuam funcionando no HANA.
+
+### Estrutura de um Report ALV
+
+Um relatório ALV deve seguir quatro elementos fundamentais:
+
+1. Definição dos Filtros (Tela de Seleção) .
+2. Seleção de Dados do Banco.
+3. Montagem/Tratamento dos Dados.
+4. Exibição dos Dados.
+
+#### Passo 1: Tela de Seleção
+
+Tela de seleção utilizando blocos e ícones para melhorar a experiência do usuário.
+
+- **PARAMETERS**;
+- **SELECT-OPTIONS**;
+- **Ícones:** utilizando códigos de ícones (`@XX@`) nos textos de seleção.
+
+#### Passo 2: Implementação Orientada a Objetos
+
+Ao invés de deixar o código solto (procedural), criar uma Classe Local para encapsular a Lógica, respeitando princípios de responsabilidade única.
+
+- Classe Local `lcl_minha_classe`;
+- Método `get_dados`: responsável por realizar O `SELECT` nas tabelas com base nos filtros da tela de seleção e armazenar em uma tabela interna global da classe;
+- Método `display_alv`: responsável por configurar e exibir o relatório em tela;
+- Método `run` : método orquestrador que chama o `get_dados` e o `display_alv`.
+
+#### Passo 3: Criação do ALV com CL_SALV_TABLE
+
+Uso da classe moderna da SAP para geração de ALVs, a `CL_SALV_TABLE`. O processo de criação envolve:
+
+1. **Factory:** chamada do método estático `cl_salv_table=>factory`, passando a tabela interna com os dados;
+2. **Funções (Toolbar):** ativação da barra de ferramentas padrão (botões de filtro, soma etc. ) através do método `get_functions( )->set_all( abap_true )`;
+3. **Display:** Chamada do método `display( )` para renderizar o relatório na tela.
+
+### Eventos de Execução
+
+Organizamos a chamada da classe nos eventos corretos do Report:
+
+- **INITIALIZATION:** instanciamos a classe Local;
+- **START-OF-SELECTION:** chamamos o método run( ) da instância criada, que dispara a seleção e a exibição.
+
+### ALV - Código de exemplo
+
+```abap
+TABLES: sflight.
+
+" Tabelas Utilizadas no exemplo
+" SPFLI:   Voos (rotas)
+" SFLIGHT: Horarios dos Voos (datas e ocupações específicas)
+" SBOOK:   Reservas de Voo (passageiros)
+" OBS.: Programa Gerador de dados nas tabelas:
+" - Executar via SE38 para popular as tabelas: SAPBC_DATA_GENERATOR
+
+" TELA DE SELEÇÃO
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETERS: p_carrid TYPE s_carr_id OBLIGATORY.
+SELECT-OPTIONS: s_connid FOR sflight-connid,
+                s_fldate FOR sflight-fldate.
+SELECTION-SCREEN END OF BLOCK b1.
+
+" Definição da Classe Local
+CLASS lcl_voos DEFINITION.
+  public section.
+    DATA: lt_voos TYPE TABLE OF sflight.
+
+    METHODS: get_voos,
+             display_alv,
+             run.
+ENDCLASS.
+
+" Implementação da Classe Local
+CLASS lcl_voos IMPLEMENTATION.
+
+  " SELECIONAR OS DADOS
+  METHOD get_voos.
+    SELECT *
+      FROM sflight
+      INTO TABLE lt_voos
+      WHERE carrid = p_carrid
+        AND connid IN s_connid
+        AND fldate IN s_fldate.
+  ENDMETHOD.
+
+  " EXIBIÇÃO DOS DADOS
+  METHOD display_alv.
+    " ex. usando WRITE
+*    LOOP AT gt_voos INTO DATA(ls_voo).
+*      WRITE: / ls_voo-carrid, ls_voo-connid, ls_voo-fldate.
+*    ENDLOOP.
+
+    " ex. usando Classe da SAP para ALV (OOP)
+    cl_salv_table=>factory(
+      IMPORTING
+        r_salv_table = DATA(lo_alv)
+      CHANGING
+        t_table = lt_voos
+    ).
+
+    " Ativar a Toolbar do ALV
+    lo_alv->get_functions( )->set_all( abap_true ).
+
+    " Apresenta o ALV na tela
+    lo_alv->display( ).
+  ENDMETHOD.
+
+  METHOD run.
+    get_voos( ).
+    display_alv( ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+" EVENTOS DE EXECUÇÃO
+INITIALIZATION.
+  DATA(lo_voos) = NEW lcl_voos( ).
+
+START-OF-SELECTION.
+  lo_voos->run( ).
+```
+
+### Tópico Avançado: ALV IDA
+
+Conceito de **ALV IDA** (*Integrated Data Access*): trata-se de uma tecnologia otimizada para o **SAP HANA** (classe `CL_SALV_GUI_TABLE_IDA`), que permite exibir grandes volumes de dados diretamente de tabelas ou *CDS Views* sem a necessidade de carregar tudo para a memória interna do programa (tabelas internas), delegando o processamento pesado para o banco de dados.
+
+## Modularização com Forms e Performs
+
+Embora a Programação Orientada a Objetos (OOP) seja o padrão moderno e recomendado para novos desenvolvimentos, o conhecimento sobre a programação estruturada (*procedural*), com o uso de *Forms*, é essencial para a manutenção de programas Legados que ainda operam em muitos ambientes SAP, inclusive após migrações para o banco de dados HANA.
+
+- **Definição:** o `FORM` é um bloco de código modularizado dentro de um programa. O comando `PERFORM` é utilizado para chamar a execução desse bloco;
+- **Comparação com Métodos:** assim como os métodos em uma Classe, os *Forms* servem para organizar e reutilizar código. No entanto, eles não possuem o encapsulamento e a estrutura hierárquica da Orientação a Objetos;
+- **Escopo e Variáveis:** diferente dos métodos que compartilham atributos da classe, os *Forms* isolados não se comunicam automaticamente. Para compartilhar dados entre eles (como tabelas internas), frequentemente utilizam-se variaveis globais declaradas no topo do programa para serem visiveis por todos os Forms;
+Implementação Prática
+- **Eventos:** utilizamos os eventos `START-OF-SELECTION` e `END-OF-SELECTION` para orquestrar as chamadas;
+- **Passagem de Parametros:** para passar dados para dentro de um *Form* utilizamos a palavra-chave `USING` (equivalente ao parâmetro de importação).
+
+### Código de exemplo: ALV usando *Forms*
+
+Refatoração do programa de ALV acima para utilizar a estrutura de Forms ao invés de Classes:
+
+```abap
+TABLES: sflight.
+
+" TELA DE SELEÇÃO
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETERS: p_carrid TYPE s_carr_id OBLIGATORY.
+SELECT-OPTIONS: s_connid FOR sflight-connid,
+                s_fldate FOR sflight-fldate.
+SELECTION-SCREEN END OF BLOCK b1.
+
+" Variável Global
+DATA: gt_voos TYPE TABLE OF sflight.
+
+" Declaração dos Forms (seria o equivalente aos métodos declarados dentro de uma Classe)
+
+FORM get_voos.
+
+  SELECT *
+    FROM sflight
+    INTO TABLE gt_voos
+    WHERE carrid = p_carrid
+      AND connid IN s_connid
+      AND fldate IN s_fldate.
+
+  IF gt_voos[] IS INITIAL.
+    PERFORM display_message USING 'Não foram encontrados Dados!'.
+  ENDIF.
+
+ENDFORM.
+
+FORM display_alv.
+
+  " classe do SAP para ALV
+  cl_salv_table=>factory(
+    IMPORTING
+      r_salv_table = DATA(lo_alv)
+    CHANGING
+      t_table = gt_voos
+  ).
+
+  " Ativar a Toolbar do ALV
+  lo_alv->get_functions( )->set_all( abap_true ).
+
+  " Apresenta o ALV na tela
+  lo_alv->display( ).
+
+ENDFORM.
+
+FORM display_message USING iv_msg TYPE string. " Form com passagem de parâmetro
+  MESSAGE iv_msg TYPE 'S'.
+ENDFORM.
+
+" Eventos de Execução
+
+START-OF-SELECTION.
+  PERFORM get_voos.
+
+END-OF-SELECTION.
+  PERFORM display_alv.
+```
+
+## ALV Multi Visões
+
+## JOBs
+
+## Debug
