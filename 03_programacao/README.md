@@ -239,6 +239,12 @@ excluir etc. )
   SELECT-OPTIONS: s_blart FOR bkpf-blart.
   ```
 
+  **Obs.:** *Select Options (Ranges)* são tratados como tabelas internas contendo quatro colunas padrão:
+  - **SIGN:** Indica inclusão (I) ou exclusão (E);
+  - **OPTION:** Operador Lógico (EQ para igual, BT para Between/Entre, GT para maior que, etc.);
+  - **LOW:** Valor inicial ou único;
+  - **HIGH:** Valor final (usado em intervalos).
+
 ### Componentes de Controle e Opções
 
 - **Checkbox:** utilizado para opções booleanas (*true/false*). Retorna `X` se marcado e `vazio` se desmarcado.
@@ -552,8 +558,70 @@ END-OF-SELECTION.
   PERFORM display_alv.
 ```
 
-## ALV Multi Visões
-
 ## JOBs
 
+Os Jobs são ferramentas para a automação e performance no SAP, permitindo que processos pesados sejam executados em segundo plano (*background*) de forma eficiente sem impactar a produtividade do usuário final.
+
+Distanção entre dois modos de execução:
+
+- **Foreground (Primeiro Plano):** ocorre quando o usuário executa uma transação ou relatório e aguarda o processamento na tela. Há interação direta e o terminal fica ocupado até o fim da execução;
+- **Background (Segundo Plano):** a execução ocorre no servidor, sem intervenção ou bloqueio da tela do usuário. É ideal para processos demorados, rotinas automáticas ou processamento de grandes volumes de dados (ex: geração de milhares de pedidos ou relatórios complexos).
+
+Duas transações são essenciais para o gerenciamento de Jobs:
+
+- **SM36:** utilizada para criar e definir Jobs;
+- **SM37:** utilizada para monitorar e gerenciar os Jobs existentes.
+
+### Criando um Job (SM36)
+
+A criação de um Job envolve a definição de passos (*steps*) e condições de início:
+
+1. **Definição do Job:** atribuição de um nome para a tarefa;
+2. **Steps (Passos):** determinam o que o Job irá executar:
+    - um comando externo;
+    - um programa externo;
+    - um programa ABAP (mais comum);
+    - é possível encadear múltiplos passos em um único Job.
+3. **Variantes:** ao agendar um programa ABAP que possui tela de seleção, utilizamos *Variants*. Uma variante é um conjunto de parâmetros de seleção pre-salvos, garantindo que o Job execute com os filtros corretos sem intervenção manual.
+4. **Condição de Execução (Start Condition):** define quando o Job será iniciado. As opções incluem:
+    - **Imediato:** inicia assim que salvo;
+    - **Data/Hora:** agendamento para um momento específico;
+    - **Periódico:** execução recorrente (ex: a cada hora, diariamente, semanalmente).
+
+### Monitoramento e Resultados (SM37)
+
+Após o agendamento, utilizamos a transação **SM37** para acompanhar o status e os resultados:
+
+- **Status do Job:** indica a situação atual (ex: Liberado, Pronto, Ativo, Concluído ou Cancelado);
+- **Spool:** é o local onde o SAP armazena a saída de impressão do Job. Se o programa gera um relatório ALV ou comandos `WRITE`, o resultado ficará acessível através do icone de Spool na SM37;
+- **Log do Job:** registra o histórico de execução, incluindo mensagens de sucesso/avisos/erros (pelo comando `MESSAGE`) e informações sobre os passos processados.
+
 ## Debug
+
+O **Debug** (ou Depuração) é o recurso que permite analisar o código em tempo real, verificando o que está sendo executado e quais valores estão sendo processados em um momento específico.
+
+Para iniciar uma sessão de debug, utilizamos os **Breakpoints** (pontos de parada) clicando na margem esquerda do editor de código, uma "bolinha vermelha" aparece, indicando que a execução do programa parará naquela Linha.
+
+Os *Breakpoints* devem ser inseridos em Linhas de comando executáveis. Após definir o *breakpoint*, basta executar o programa (F8).
+
+### A Interface do Debugger
+
+- **Tipos de visualizações (Desktops):** Desktop 1, Desktop 2, Desktop 3 e Standard;
+- **Variables:** monitorar o conteúdo dos dados:
+  - **Variáveis Simples:** basta dar um duplo clique no nome da variável no código ou digitá-la na lista para ver seu valor atual e tipo;
+  - **Estruturas e Tabelas:** Ícones específicos indicam se uma variável é uma estrutura ou uma tabela interna. Ao clicar, você visualiza as Linhas e colunas detalhadas.
+  - **Objetos:** é possível visualizar as instâncias de classes e seus atributos.
+
+### Comandos de Navegação (atalhos sssenciais)
+
+- **F5 (*Step Into* / Passo a Passo):** executa a próxima Linha. Se a Linha for uma chamada de método ou função, o debug entra dentro dela;
+- **F6 (*Step Over* / Executar):** executa a Linha atual. Se for um método ou função, executa sem entrar nele e para na Linha seguinte;
+- **F7 (*Step Out* / Retornar):** executa o restante do bloco atual (método ou função) e retorna para quem chamou aquele código;
+- **F8 (*Continue* / Continuar):** segue com a execução do programa até o próximo *breakpoint* ou até o fim do processamento.
+
+### Funcionalidades Avançadas
+
+- **Pilha ABAP (Call Stack):** permite visualizar o caminho percorrido pelo programa até o ponto atual (Tela > Evento > Método), podendo navegar entre os níveis para inspecionar variáveis de escopos anteriores;
+- **Variáveis Locais e Globais:** separa o que é escopo do método atual (*Locals*) do que é escopo em todo o programa (*Globals*);
+- **Breakpoint Condicional:** configurar um *breakpoint* para parar apenas se uma condição for verdadeira (bt dir > *Create Breakpoint Condition*);
+- **Variables for Start Variants:** salva a lista atual de variáveis como uma variante, para continuar monitorando mesmo ao reiniciar o debug. Dessa forma, as variáveis já estarão carregadas na tela.

@@ -153,10 +153,10 @@ No exemplo abaixo usando a estrutura definida no tópico anterior `ty_cliente` e
 ```abap
 DATA: clientes TYPE TABLE OF ty_cliente.
 
-* incluir dados na tabela clientes a partir da variável
+" incluir dados na tabela clientes a partir da variável
 APPEND cliente TO clientes.
 
-* incluir diretamente dados na tabela clientes
+" incluir diretamente dados na tabela clientes
 APPEND VALUE ty_cliente(
   nome = 'Andre Carlucci'
   data_nasc = '19761129'
@@ -258,8 +258,39 @@ DATA: cliente2 TYPE ty_cliente.
 
 MOVE-CORRESPONDING cliente TO cliente2.
 WRITE: / 'cliente -> cliente 2: ', cliente2-nome, cliente2-data_nasc, cliente2-email.
+```
+
+### CORRESPONDING e COLLECT
+
+- `CORRESPONDING`: mover os campos coincidentes para um estrutura de trabalho;
+- `COLLECT` (agrupar): verifica na tabela se já existe uma linha com a mesma chave - se existir: soma os campos numéricos; se não: insere uma nova linha
+
+```abap
+TYPES: BEGIN OF ty_alv,
+         carrid TYPE s_carr_id,
+         connid TYPE s_conn_id,
+         paymentsum TYPE s_sum,
+       END OF ty_alv.
+
+DATA: lt_voos TYPE TABLE OF sflight,
+      lt_alv  TYPE TABLE OF ty_alv.
+
+SELECT carrid, connid, paymentsum
+  FROM sflight
+  INTO CORRESPONDING FIELDS OF TABLE @lt_voos
+  WHERE carrid = @it_carrid
+    AND connid IN @it_connid
+    AND fldate IN @it_fldate.
+
+LOOP AT lt_voos INTO DATA(ls_voo).
+    DATA(ls_alv) = CORRESPONDING ty_alv( ls_voo ).
+    COLLECT ls_alv INTO lt_alv.
+ENDLOOP.
+```
 
 ### CLEAR - limpar valores das variáveis
+
+```abap
 CLEAR cliente2.
 WRITE: / 'CLEAR cliente2: ', cliente2-nome.
 ```
