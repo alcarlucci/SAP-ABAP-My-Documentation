@@ -111,7 +111,14 @@ valor = '110.50'.
 
 ### Variáveis SY
 
-Variáveis do Servidor.
+O SAP possui uma estrutura global chamada `sy` que contém informações do sistema em tempo de execução:
+
+- `sy-datum`: Data atual do sistema;
+- `sy-uzeit`: Hora atual do sistema;
+- `sy-uname`: Usuário Logado;
+- `sy-sysid`: ID do sistema;
+- `sy-cprog`: Nome do programa em execução;
+- `sy-title`: Título do programa.
 
 ## Constantes
 

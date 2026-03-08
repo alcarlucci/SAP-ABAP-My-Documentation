@@ -163,8 +163,7 @@ domínio, garantindo a integridade dos dados sem necessidade de codificação ad
 Para que o nome do campo na tela de seleção não apareça como o nome técnico da variável (ex: P_STATUS ), ir para:
 
 - Elementos de texto > Textos de seleção;
-- Ao marcar a opção de "Dicionario", o programa assume automaticamente o texto
-definido no Elemento de Dados.
+- Ao marcar a opção de "Dicionario", o programa assume automaticamente o texto definido no Elemento de Dados.
 
 ## Estruturas (Structure)
 
