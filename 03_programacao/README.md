@@ -130,7 +130,7 @@ CLASS Lcl_nome_da_classe IMPLEMENTATION.
 ENDCLASS.
 ```
 
-Sintaxe para declarar uma variável (objeto) referenciando uma clasee:
+Sintaxe para declarar uma variável (objeto) referenciando uma classe:
 
 ```abap
 DATA(lo_objeto) = NEW lcl_nome_da_classe( ).
@@ -166,7 +166,7 @@ Exemplo de Sintaxe:
 
 ```abap
 " Chama a mensagem 000 da classe ZMEUSYS como um erro
-MESSAGE e000 (ZMEUSYS).
+MESSAGE e000(ZMEUSYS).
 ```
 
 ### Passagem de Parâmetros na Mensagem
@@ -177,7 +177,7 @@ Exemplo prático:
 
 ```abap
 " Mensagem 004 definida na SE91: "Usuário &1 criou a Ordem &2."
-MESSAGE i004(ZMEUSY) WITH sy-uname '1234' .
+MESSAGE i004(ZMEUSY) WITH sy-uname '1234'.
 " Resultado: "Usuário USER-NAME criou a ordem 1234."
 ```
 
@@ -302,7 +302,7 @@ excluir etc. )
     SELECTION-SCREEN END OF BLOCK b1.
     ```
 
-  - `text-001` (título do Bloco), definir em: Meun Goto > Text Elements > Text Symbols
+  - `text-001` (título do Bloco), definir em: Menu Goto > Text Elements > Text Symbols
 
 - **Quebra de Linha:** pula '*n*' Linhas
   - Sintaxe: `SELECTION-SCREEN SKIP 1.`
@@ -320,7 +320,7 @@ Podemos adicionar botões tanto no corpo da tela quanto na *toolbar* (barra de f
   - Configuração: requer a declaração `TABLES: sscrfields.`; o texto e atribuído ao campo `sscrfields-functxt_01`;
   - Permite até 5 botões: `KEY 1` até `KEY 5`
 
-- **Tratamento de Eventos:** evento `AT SELECTION-SCREEN` para capturar o clique nos botões; o campo `sscrfields-ucom` conterá o código do comando acionado (ex: `FC01` para toolbar `KEY 1` ou o nome definido no *Pushbutton*).
+- **Tratamento de Eventos:** evento `AT SELECTION-SCREEN` para capturar o clique nos botões; o campo `sscrfields-ucom` conterá o código do comando acionado (ex: `FC01` para toolbar `KEY 1`; ou o nome definido no *Pushbutton*).
 
 Sintaxe de exemplo (1 botão na tela + 2 botões na toolbar):
 
