@@ -302,7 +302,7 @@ MESSAGE i004(zmeusys_msg) WITH sy-uname '1234'.
 ```abap
 TABLES: sflight. " tabela referenciada no filtro SELECT-OPTIONS
 
-" Parameters (Parâmetros Únicos) - TYPE p/ elemento de dados
+" Parameters (Parâmetros Únicos) - TYPE p/ tabela-campo ou elemento de dados
 PARAMETERS: p_carrid TYPE s_carr_id. " parâmetro não obrigatório
 PARAMETERS: p_carrid TYPE s_carr_id OBLIGATORY. " parâmetro obrigatório
 
@@ -374,7 +374,6 @@ TABLES: sscrfields. "tabela para botões Function Key (toolbar)
 
 " Buttons (Screen) - botões na tela
 SELECTION-SCREEN PUSHBUTTON /1(20) p_but1 USER-COMMAND but1.
-
 " Buttons (Toolbar) - botões na barra de ferramentas
 SELECTION-SCREEN FUNCTION KEY 1.
 SELECTION-SCREEN FUNCTION KEY 2.
@@ -396,6 +395,346 @@ AT SELECTION-SCREEN.
   ENDIF.
 ```
 
-## ALVs
+## ALVs (*Application List Viewer*)
+
+**ALV - ex.1: visão única (analítico) - usando OOP:**
+
+```abap
+TABLES: sflight.
+
+" Tabelas Utilizadas no exemplo
+" SPFLI:   Voos (rotas)
+" SFLIGHT: Horarios dos Voos (datas e ocupações específicas)
+" SBOOK:   Reservas de Voo (passageiros)
+" OBS.: Programa Gerador de dados nas tabelas:
+" - Executar via SE38 para popular as tabelas: SAPBC_DATA_GENERATOR
+
+" TELA DE SELEÇÃO
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETERS: p_carrid TYPE s_carr_id OBLIGATORY.
+SELECT-OPTIONS: s_connid FOR sflight-connid,
+                s_fldate FOR sflight-fldate.
+SELECTION-SCREEN END OF BLOCK b1.
+
+" Definição da Classe Local
+CLASS lcl_voos DEFINITION.
+  public section.
+    DATA: lt_voos TYPE TABLE OF sflight.
+
+    METHODS: get_voos,
+             display_alv,
+             display_message IMPORTING VALUE(iv_msg) TYPE string,
+             run.
+ENDCLASS.
+
+" Implementação da Classe Local
+CLASS lcl_voos IMPLEMENTATION.
+
+  " SELECIONAR OS DADOS
+  METHOD get_voos.
+
+    SELECT *
+      FROM sflight
+      INTO TABLE lt_voos
+      WHERE carrid = p_carrid
+        AND connid IN s_connid
+        AND fldate IN s_fldate.
+
+    IF lt_voos[] IS INITIAL.
+      display_message( 'Não foram encontrados Dados!' ).
+    ENDIF.
+
+  ENDMETHOD.
+
+  " EXIBIÇÃO DOS DADOS
+  METHOD display_alv.
+    " ex. usando WRITE
+*    LOOP AT gt_voos INTO DATA(ls_voo).
+*      WRITE: / ls_voo-carrid, ls_voo-connid, ls_voo-fldate.
+*    ENDLOOP.
+
+    " ex. usando Classe da SAP para ALV (OOP)
+    cl_salv_table=>factory(
+      IMPORTING
+        r_salv_table = DATA(lo_alv)
+      CHANGING
+        t_table = lt_voos
+    ).
+
+    " Ativar a Toolbar do ALV
+    lo_alv->get_functions( )->set_all( abap_true ).
+
+    " Apresenta o ALV na tela
+    lo_alv->display( ).
+  ENDMETHOD.
+
+  METHOD display_message.
+    MESSAGE iv_msg TYPE 'S'.
+  ENDMETHOD.
+
+  METHOD run.
+    get_voos( ).
+    display_alv( ).
+  ENDMETHOD.
+
+ENDCLASS.
+
+" EVENTOS DE EXECUÇÃO
+INITIALIZATION.
+  DATA(lo_voos) = NEW lcl_voos( ). " instancia a classe Local
+
+START-OF-SELECTION.
+  lo_voos->run( ). " chama o método run( ) da instância criada
+```
+
+**ALV - ex.1: visão única (analítico) - usando *Forms*:**
+
+```abap
+TABLES: sflight.
+
+" TELA DE SELEÇÃO
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETERS: p_carrid TYPE s_carr_id OBLIGATORY.
+SELECT-OPTIONS: s_connid FOR sflight-connid,
+                s_fldate FOR sflight-fldate.
+SELECTION-SCREEN END OF BLOCK b1.
+
+" Variável Global
+DATA: gt_voos TYPE TABLE OF sflight.
+
+" Declaração dos Forms (seria o equivalente aos métodos declarados dentro de uma Classe)
+
+FORM get_voos.
+
+  SELECT *
+    FROM sflight
+    INTO TABLE gt_voos
+    WHERE carrid = p_carrid
+      AND connid IN s_connid
+      AND fldate IN s_fldate.
+
+  IF gt_voos[] IS INITIAL.
+    PERFORM display_message USING 'Não foram encontrados Dados!'.
+  ENDIF.
+
+ENDFORM.
+
+FORM display_alv.
+
+  " classe do SAP para ALV
+  cl_salv_table=>factory(
+    IMPORTING
+      r_salv_table = DATA(lo_alv)
+    CHANGING
+      t_table = gt_voos
+  ).
+
+  " Ativar a Toolbar do ALV
+  lo_alv->get_functions( )->set_all( abap_true ).
+
+  " Apresenta o ALV na tela
+  lo_alv->display( ).
+
+ENDFORM.
+
+FORM display_message USING iv_msg TYPE string. " Form com passagem de parâmetro
+  MESSAGE iv_msg TYPE 'S'.
+ENDFORM.
+
+" Eventos de Execução
+" (utiliza os eventos START-OF-SELECTION e END-OF-SELECTION para orquestrar as chamadas)
+
+START-OF-SELECTION.
+  PERFORM get_voos.
+
+END-OF-SELECTION.
+  PERFORM display_alv.
+```
+
+**ALV - ex.2: multi visões (analítico/sintético) - usando OOP:**
+
+**1. Classe para visão analítica (criar include  `zalvrp_002_analitico`):**
+
+```abap
+" Classe local para Visão Analítica
+CLASS lcl_voos_analitica DEFINITION.
+
+  PUBLIC SECTION.
+
+    " Definição dos tipos Range para parâmetros SELECT-OPTIONS
+    TYPES: tr_connid TYPE RANGE OF sflight-connid,
+           tr_fldate TYPE RANGE OF sflight-fldate.
+
+    DATA: lt_voos TYPE TABLE OF sflight.
+
+    METHODS: get_voos IMPORTING VALUE(it_carrid) TYPE s_carr_id
+                                VALUE(it_connid) TYPE tr_connid
+                                VALUE(it_fldate) TYPE tr_fldate,
+             display_alv.
+
+ENDCLASS.
+
+CLASS lcl_voos_analitica IMPLEMENTATION.
+
+  METHOD get_voos.
+
+    SELECT *
+      FROM sflight
+      INTO TABLE lt_voos
+      WHERE carrid = it_carrid
+        AND connid IN it_connid
+        AND fldate IN it_fldate.
+
+  ENDMETHOD.
+
+  METHOD display_alv.
+    " usando Classe da SAP para ALV (OOP)
+    cl_salv_table=>factory(
+      IMPORTING
+        r_salv_table = DATA(lo_alv)
+      CHANGING
+        t_table = lt_voos
+    ).
+
+    " Ativar a Toolbar do ALV
+    lo_alv->get_functions( )->set_all( abap_true ).
+
+    " Apresenta o ALV na tela
+    lo_alv->display( ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+**2. Classe para visão sintética (criar include  `zalvrp_002_sintetico`):**
+
+```abap
+" Classe local para Visão Sintética
+CLASS lcl_voos_sintetica DEFINITION.
+
+  PUBLIC SECTION.
+
+    " Definição dos tipos Range para parâmetros SELECT-OPTIONS
+    TYPES: tr_connid TYPE RANGE OF sflight-connid,
+           tr_fldate TYPE RANGE OF sflight-fldate.
+
+    " Tipo de Exibição do ALV sintetico (estrutura)
+    TYPES: BEGIN OF ty_alv,
+            carrid TYPE s_carr_id,
+            connid TYPE s_conn_id,
+            paymentsum TYPE s_sum,
+           END OF ty_alv.
+
+    DATA: lt_voos TYPE TABLE OF sflight,
+          lt_alv  TYPE TABLE OF ty_alv.
+
+    METHODS: get_voos IMPORTING VALUE(it_carrid) TYPE s_carr_id
+                                VALUE(it_connid) TYPE tr_connid
+                                VALUE(it_fldate) TYPE tr_fldate,
+             display_alv.
+
+ENDCLASS.
+
+CLASS lcl_voos_sintetica IMPLEMENTATION.
+
+  METHOD get_voos.
+
+    " Resolver somatorio via LOOP e COLLECT
+*    SELECT carrid, connid, paymentsum
+*      FROM sflight
+*      INTO CORRESPONDING FIELDS OF TABLE @lt_voos
+*      WHERE carrid = @it_carrid
+*        AND connid IN @it_connid
+*        AND fldate IN @it_fldate.
+*
+*    DATA: soma_total TYPE p DECIMALS 2.
+*    soma_total = 0.
+*
+*    LOOP AT lt_voos INTO DATA(ls_voo).
+*      DATA(ls_alv) = CORRESPONDING ty_alv( ls_voo ).
+*      soma_total = soma_total + ls_alv-paymentsum.
+*      COLLECT ls_alv INTO lt_alv.
+*    ENDLOOP.
+*
+*    APPEND VALUE ty_alv(
+*      paymentsum = soma_total
+*    ) TO lt_alv.
+
+    " Resolver somatorio via SELECT GROUP BY (mais indicado nesse caso)
+    SELECT carrid, connid, SUM( paymentsum ) as paymentsum
+      FROM sflight
+      INTO TABLE @lt_alv
+      WHERE carrid = @it_carrid
+        AND connid IN @it_connid
+        AND fldate IN @it_fldate
+      GROUP BY carrid, connid.
+
+  ENDMETHOD.
+
+  METHOD display_alv.
+    " usando Classe da SAP para ALV (OOP)
+    cl_salv_table=>factory(
+      IMPORTING
+        r_salv_table = DATA(lo_alv)
+      CHANGING
+        t_table = lt_alv
+    ).
+
+    " Ativar a Toolbar do ALV
+    lo_alv->get_functions( )->set_all( abap_true ).
+
+    " Apresenta o ALV na tela
+    lo_alv->display( ).
+  ENDMETHOD.
+
+ENDCLASS.
+```
+
+**3. Programa ALV multi visões (`zalvrp_002`):**
+
+```abap
+" Duas Visões:
+" - Analítica: Dados brutos globais
+" - Sintética: Resumos / padrões / agrupamentos
+
+TABLES: sflight.
+
+INCLUDE: zalvrp_002_analitico,
+         zalvrp_002_sintetico.
+
+" TELA DE SELEÇÃO
+SELECTION-SCREEN BEGIN OF BLOCK b1 WITH FRAME TITLE text-001.
+PARAMETERS: p_carrid TYPE s_carr_id OBLIGATORY.
+SELECT-OPTIONS: s_connid FOR sflight-connid, "s_conn_id
+                s_fldate FOR sflight-fldate. "s_date
+SELECTION-SCREEN SKIP 1.
+PARAMETERS: rb_anli RADIOBUTTON GROUP rbg1,
+            rb_sint RADIOBUTTON GROUP rbg1.
+SELECTION-SCREEN END OF BLOCK b1.
+
+" Eventos de Execução
+
+INITIALIZATION.
+  DATA(lo_voos_analitica) = NEW lcl_voos_analitica( ).
+  DATA(lo_voos_sintetica) = NEW lcl_voos_sintetica( ).
+
+START-OF-SELECTION.
+  IF rb_anli = 'X'.
+    lo_voos_analitica->get_voos( it_carrid = p_carrid
+                                 it_connid = s_connid[]
+                                 it_fldate = s_fldate[] ).
+  ELSE.
+    lo_voos_sintetica->get_voos( it_carrid = p_carrid
+                                 it_connid = s_connid[]
+                                 it_fldate = s_fldate[] ).
+  ENDIF.
+
+END-OF-SELECTION.
+  IF rb_anli = 'X'.
+    lo_voos_analitica->display_alv( ).
+  ELSE.
+    lo_voos_sintetica->display_alv( ).
+  ENDIF.
+```
 
 ## Outros Códigos

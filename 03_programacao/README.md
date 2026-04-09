@@ -317,7 +317,7 @@ Podemos adicionar botões tanto no corpo da tela quanto na *toolbar* (barra de f
 
 - **Function Key** (Botão na Toolbar)
   - Sintaxe: `SELECTION-SCREEN FUNCTION KEY 1.`
-  - Configuração: requer a declaração `TABLES: sscrfields.`; o texto e atribuído ao campo `sscrfields-functxt_01`;
+  - Configuração: requer a declaração `TABLES: sscrfields.`; o texto é atribuído ao campo `sscrfields-functxt_01`;
   - Permite até 5 botões: `KEY 1` até `KEY 5`
 
 - **Tratamento de Eventos:** evento `AT SELECTION-SCREEN` para capturar o clique nos botões; o campo `sscrfields-ucom` conterá o código do comando acionado (ex: `FC01` para toolbar `KEY 1`; ou o nome definido no *Pushbutton*).
@@ -380,7 +380,7 @@ Tela de seleção utilizando blocos e ícones para melhorar a experiência do us
 Ao invés de deixar o código solto (procedural), criar uma Classe Local para encapsular a Lógica, respeitando princípios de responsabilidade única.
 
 - Classe Local `lcl_minha_classe`;
-- Método `get_dados`: responsável por realizar O `SELECT` nas tabelas com base nos filtros da tela de seleção e armazenar em uma tabela interna global da classe;
+- Método `get_dados`: responsável por realizar o `SELECT` nas tabelas com base nos filtros da tela de seleção e armazenar em uma tabela interna global da classe;
 - Método `display_alv`: responsável por configurar e exibir o relatório em tela;
 - Método `run` : método orquestrador que chama o `get_dados` e o `display_alv`.
 
