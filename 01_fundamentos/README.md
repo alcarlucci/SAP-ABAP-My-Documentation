@@ -4,7 +4,7 @@ Fundamentos da linguagem ABAP
 
 ## SAP GUI
 
-- transação *se38*: criar/acessar programas em ABAP
+- transação *SE38*: criar/acessar programas em ABAP
 - prefixos em nomes de programas
   - z: programas que serão utilizados pelo cliente final
   - y: programas que não serão utilizados pelo cliente final (testes etc)
@@ -13,12 +13,16 @@ Fundamentos da linguagem ABAP
   - Type: tipo; ex.: **Executable Program**
   - Save > Local Object
 
-### Dicas de Produtividade (Atalhos)
+### Dicas de Produtividade (atalhos) no editor ABAP (*SE38*)
 
 - **CTRL + D:** Duplica a linha atual no editor de código;
 - **CTRL + Clique:** Seleciona a palavra inteira onde o cursor está posicionado;
 - **Comentários:** Segundo as boas práticas (*Clean Code*), prefira utilizar aspas duplas (`"`) para comentários, pois permitem comentar na mesma linha do código ou em linhas indentadas, diferentemente do asterisco (`*`) que deve estar na primeira coluna;
-- **Documentação (F1):** utilize a tecla `F1` sobre um comando para ver a documentação oficial da SAP e exemplos de sintaxe.
+- **Documentação (F1):** utilize a tecla `F1` sobre um comando para ver a documentação oficial da SAP e exemplos de sintaxe;
+- **Code Templates:** autopreenchimento de modelos de código;
+  - no editor ABAP, digite a palavra-chave do template (ex: `if`, `case`, `loop`);
+  - a funcionalidade de *Code Completion* mostrará sugestões com o símbolo `§`;
+  - para inserir o *template* pressione `Ctrl + Enter`.
 
 ### Limpeza de Cache do HANA/SAP
 
