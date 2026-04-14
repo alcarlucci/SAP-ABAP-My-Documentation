@@ -221,16 +221,28 @@ select descricao status
 
 ```abap
 " insere/atualiza uma única linha na tabela (a partir de uma estrutura)
+
 DATA: ls_status TYPE zstatus_t01.
 
 ls_status-status = 'A'.
 ls_status-descricao = 'Teste A'.
 
 MODIFY zstatus_t01 FROM ls_status.
+
+" (OU)
+" OPÇÃO MODERNA: utilizando o modo 'inline'
+
+DATA(ls_status) = VALUE zstatus_t01(
+  status = 'A'
+  descricao = 'Teste A'
+).
+
+MODIFY zstatus_t01 FROM ls_status.
 ```
 
 ```abap
 " insere/atualiza várias linha na tabela (a partir de uma tabela interna)
+
 DATA: ls_status TYPE zstatus_t01.
       lt_status TYPE TABLE OF zstatus_t01.
 
@@ -241,6 +253,19 @@ APPEND ls_status TO lt_status.
 ls_status-status = 'B'.
 ls_status-descricao = 'Teste B'.
 APPEND ls_status TO lt_status.
+
+MODIFY zstatus_t01 FROM TABLE lt_status.
+
+" (OU)
+" OPÇÃO MODERNA: utilizando o modo 'inline'
+
+" Declaração do Table Type
+TYPES tt_status TYPE TABLE OF zstatus_t01 WITH DEFAULT KEY.
+
+DATA(lt_status) = VALUE tt_status(
+  ( status = 'A' descricao = 'Teste A' )
+  ( status = 'B' descricao = 'Teste B' )
+).
 
 MODIFY zstatus_t01 FROM TABLE lt_status.
 ```
