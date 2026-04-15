@@ -195,7 +195,7 @@ ENDLOOP.
 
 ```abap
 DATA: ls_status TYPE zstatus_t01, " estrutura para uma linha da Tabela Status
-      lt_status TYPE TABLE OF zstatus_t01. " estrutura para TABELA Status
+      lt_status TYPE TABLE OF zstatus_t01. " tabela interna para TABELA Status
 ```
 
 **Comando SELECT (Ler Dados):**
@@ -204,17 +204,47 @@ DATA: ls_status TYPE zstatus_t01, " estrutura para uma linha da Tabela Status
 " Seleciona dados da Tabela no BD (usando * - todas colunas)
 select *
   from zstatus_t01
-  INTO TABLE lt_status.
+  INTO TABLE @lt_status.
 
 " Seleciona dados da Tabela no BD (usando nome das colunas - precisa estar na ordem certa das colunas na tabela)
-select status descricao
+select status, descricao
   from zstatus_t01
-  INTO TABLE lt_status.
+  INTO TABLE @lt_status.
 
 " Seleciona dados da Tabela no BD (usando nome das colunas - qq ordem usando CORRESPONDING FIELDS)
-select descricao status
+select descricao, status
   from zstatus_t01
-  INTO CORRESPONDING FIELDS OF TABLE lt_status.
+  INTO CORRESPONDING FIELDS OF TABLE @lt_status.
+```
+
+**Cláusula WHERE (filtrar Dados):**
+
+```abap
+" Filtros - Tela de Seleção
+TABLES: zpedido_t1.
+SELECT-OPTIONS: so_ped FOR zpedido_t1-id.
+
+" Declaração das tabelas internas
+DATA: lt_pedido TYPE TABLE OF zpedido_t1,
+      lt_pedido_item TYPE TABLE OF zpedido_item_t2,
+
+" Seleciona os Pedidos para o filtro em so_ped (SELECT-OPTIONS)
+SELECT *
+  FROM zpedido_t1
+  INTO TABLE @lt_pedido
+  WHERE id IN @so_ped.
+
+" Verifica se achou Vendas
+IF lt_pedido[] IS NOT INITIAL.
+
+  " Seleciona os Itens do Pedido fazendo JOIN com Pedido (já selecionado)
+  SELECT *
+    FROM zpedido_item_t2
+    INTO TABLE @lt_pedido_item
+    FOR ALL ENTRIES IN @lt_pedido
+    WHERE id = @lt_pedido-id.
+
+ENDIF.
 ```
 
 **Comando MODIFY (Inserir ou Atualizar):**
