@@ -217,7 +217,7 @@ select descricao, status
   INTO CORRESPONDING FIELDS OF TABLE @lt_status.
 ```
 
-**Cláusula WHERE (filtrar Dados):**
+**Cláusula WHERE e FOR ALL ENTRIES IN (filtrar Dados):**
 
 ```abap
 " Filtros - Tela de Seleção
