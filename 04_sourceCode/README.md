@@ -82,6 +82,34 @@ CASE opcao.
 ENDCASE.
 ```
 
+**CHECK:**
+
+```abap
+" Dentro de Loops
+LOOP AT lt_dados INTO ls_linha.
+  CHECK ls_linha-valor > 10. " Só processa se o valor for maior que 10
+    
+  " O código abaixo só é executado se o CHECK passar (for verdadeiro)
+  WRITE: ls_linha-id.
+ENDLOOP.
+```
+
+```abap
+" Fora de Loops
+METHOD get_produtos.
+
+  CHECK lt_pedido_item[] IS NOT INITIAL. " Só processa se tiverem registros na tabela lt_pedido_item
+
+  " O código restante do método só é executado se o CHECK passar (for verdadeiro)
+  SELECT *
+    FROM zfajr_pcx_t2
+    INTO TABLE @lt_produtos
+    FOR ALL ENTRIES IN @lt_pedido_item
+    WHERE id = @lt_pedido_item-produto.
+
+ENDMETHOD.
+```
+
 ## Estruturas de Repetição
 
 **LOOP:**

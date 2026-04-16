@@ -212,6 +212,47 @@ CASE opcao.
 ENDCASE.
 ```
 
+### CHECK
+
+O comando `CHECK` no ABAP funciona como um condicional.
+
+- **condição verdadeira:** o programa continua normalmente;
+- **condição falsa:** o comando interrompe a execução do bloco atual (como um loop ou sub-rotina).
+
+Baseado no contexto - varia dependendo de onde ele é utilizado no código:
+
+- **Dentro de Loops** (`LOOP`; `DO`):
+  - age como um `CONTINUE` condicional;
+  - se for falsa, o `CHECK` pula o restante do código dentro do loop para aquela iteração e inicia a próxima iteração.
+  
+  ```abap
+  LOOP AT lt_dados INTO ls_linha.
+    CHECK ls_linha-valor > 10. " Só processa se o valor for maior que 10
+    
+    " O código abaixo só é executado se o CHECK passar (for verdadeiro)
+    WRITE: ls_linha-id.
+  ENDLOOP.
+  ```
+
+- **Fora de Loops** (Métodos; FMs; Sub-rotinas):
+  - age como um `RETURN` condicional;
+  - se for falsa, o `CHECK` sai do bloco de processamento atual, ignorando o código subsequente dentro daquele método ou formulário.
+  
+  ```abap
+  METHOD get_produtos.
+
+    CHECK lt_pedido_item[] IS NOT INITIAL. " Só processa se tiverem registros na tabela lt_pedido_item
+
+    " O código restante do método só é executado se o CHECK passar (for verdadeiro)
+    SELECT *
+      FROM zfajr_pcx_t2
+      INTO TABLE @lt_produtos
+      FOR ALL ENTRIES IN @lt_pedido_item
+      WHERE id = @lt_pedido_item-produto.
+
+  ENDMETHOD.
+  ```
+
 ## Estruturas de repetição (loop)
 
 ### LOOP
