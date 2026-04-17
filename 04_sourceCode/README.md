@@ -56,8 +56,12 @@ DATA(opcao) = 1.
 
 IF opcao = 1.
   WRITE: / 'Opção é 1'.
+ELSEIF opcao = 2.
+  WRITE: / 'Opção é 2'.
+ELSEIF opcao = 3.
+  WRITE: / 'Opção é 3'.
 ELSE.
-  WRITE: / 'Opção não e 1'.
+  WRITE: / 'Fora das opções'.
 ENDIF.
 
 IF opcao >= 1 AND opcao <= 3.
