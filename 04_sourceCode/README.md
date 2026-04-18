@@ -343,6 +343,47 @@ where status = 'A'.
 delete from zstatus_t01.
 ```
 
+## Forms e Performs
+
+```abap
+" Exemplo de Calculadora usando Forms
+PARAMETERS: p_num1 TYPE i,
+            p_num2 TYPE i.
+
+FORM calculadora USING iv_oper TYPE c.
+
+  DATA: lv_resultado TYPE i.
+
+  CASE iv_oper.
+    WHEN '+'.
+      lv_resultado = p_num1 + p_num2.
+      WRITE: / 'Resultado (+): ', lv_resultado.
+    WHEN '-'.
+      lv_resultado = p_num1 - p_num2.
+      WRITE: / 'Resultado (-): ', lv_resultado.
+    WHEN '*'.
+      lv_resultado = p_num1 * p_num2.
+      WRITE: / 'Resultado (*): ', lv_resultado.
+    WHEN '/'.
+      IF p_num2 IS INITIAL.
+        WRITE: / 'Resultado (/): E. Div Zero'.
+      ELSE.
+        lv_resultado = p_num1 / p_num2.
+        WRITE: / 'Resultado (/): ', lv_resultado.
+      ENDIF.
+    WHEN OTHERS.
+      WRITE: / 'Operação inválida ( + - * / )'.
+  ENDCASE.
+
+ENDFORM.
+
+START-OF-SELECTION.
+  PERFORM calculadora USING '+'.
+  PERFORM calculadora USING '-'.
+  PERFORM calculadora USING '*'.
+  PERFORM calculadora USING '/'.
+```
+
 ## Classes e OOP no ABAP
 
 **Declaração - Classe Local:**

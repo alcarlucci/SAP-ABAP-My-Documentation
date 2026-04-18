@@ -50,7 +50,7 @@ As Transações funcionam como atalhos de navegação. Cada transação possui u
 - **SAT** (*Runtime Analysis*): análise de performance na execução de um programa;
 - **SE61** (*Edit Documents*): criar e editar arquivos de documentações para serem linkados na documentação dos objetos no SAP;
 - **SE91** (Message Maintenance): criação e manutenção de Classes de Mensagens;
-- **SE93** (*Maintain Transaction*): criação de Transações.
+- **SE93** (*Maintain Transaction*): criação/exibição de Transações.
 
 ## Variáveis
 

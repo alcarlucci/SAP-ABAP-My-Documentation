@@ -138,8 +138,17 @@ DATA(lo_objeto) = NEW lcl_nome_da_classe( ).
 
 ### Organização com INCLUDES
 
-À medida que o código da classe Local cresce, o programa principal pode ficar extenso e difícil de Ler. Para resolver isso, utilizamos
-`Includes`. Um *Include* é um objeto que permite modularizar o código. Na prática, movemos a definição e a implementação da classe para um arquivo separado (ex: `Z_PROGRAMA_INC`) e o referenciamos no programa principal. Isso mantém o código organizado, embora a classe continue sendo Local ao programa que chama o *include*.
+Um *Include* é um objeto que permite modularizar o código, utilizados para armazenar trechos de código que compõem um programa maior. Na prática, no do código de uma classe Local, movemos a definição e a implementação da classe para um arquivo separado (ex: `Z_PROGRAMA_INC`) e o referenciamos no programa principal. Isso mantém o código organizado, embora a classe continue sendo Local ao programa que chama o *include*.
+
+Portanto, o uso de *includes* tem por objetivos a **organização** (modularizar o código em blocos), **legibilidade** (manter o programa principal mais legível) e **reutilização** (agrupar trechos similares de código).
+
+Alguns casos de uso, com suas respectivas nomenclaturas, comumente vistos em programas ABAP, seriam *includes* para modularizar:
+
+- **TOP:** Declarações Globais (variáveis, tabelas internas);
+- **SCR (screen):** construção da Tela de Seleção;
+- **PBO (*process before output*):** Eventos antes de exibir a Tela de Seleção;
+- **PAI (*process after input*):** Eventos depois de exibir a Tela de Seleção;
+- **F01, F02 ... (*Forms*):** *forms* (sub-rotinas) contendo a lógica de negócio.
 
 ## Classes de Mensagem (*Message Classes*)
 
