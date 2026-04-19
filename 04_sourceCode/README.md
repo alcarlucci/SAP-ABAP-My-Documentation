@@ -343,6 +343,46 @@ where status = 'A'.
 delete from zstatus_t01.
 ```
 
+## Declarações Inline (resumo)
+
+```abap
+TYPES: BEGIN OF ty_cliente,
+         nome  TYPE string,
+         email TYPE string,
+       END OF ty_cliente.
+
+DATA: lt_clientes TYPE TABLE OF ty_cliente. " declaração da tabela interna (APEEND e APPEND VALUE)
+TYPES tt_clientes TYPE TABLE OF ty_cliente WITH EMPTY KEY. " declaração do table type (Tabela Interna inline)
+
+" variáveis simples
+DATA(gv_nome) = 'Andre'.
+
+" Estruturas (Work Areas): operador VALUE p/ o tipo da estrutura
+DATA(ls_cliente) = VALUE ty_cliente(
+  nome  = 'Andre'
+  email = 'andre@gmail.com'
+).
+APPEND ls_cliente TO lt_clientes. " adiciona a linha na tabela
+
+" APPEND sem criar estrutura (work area): comando APPEND VALUE p/ o tipo da estrutura
+APPEND VALUE ty_cliente(
+  nome  = 'Andre'
+  email = 'andre@gmail.com'
+) TO lt_clientes.
+
+"(OPÇÃO) APPEND VALUE usando símbolo #: infere o tipo (ty_cliente) baseado na tabela destino (lt_clientes)
+APPEND VALUE #(
+  nome  = 'Lucas'
+  email = 'lucas@gmail.com'
+) TO lt_clientes.
+
+" Tabelas Internas (criar e popular n linhas): operador VALUE p/ um Table Type do tipo da estrutura
+DATA(lt_clientes_inline) = VALUE tt_clientes(
+  ( nome = 'Andre' email = 'andre@gmail.com' )
+  ( nome = 'Lucas' email = 'lucas@gmail.com' )
+).
+```
+
 ## Forms e Performs
 
 ```abap
