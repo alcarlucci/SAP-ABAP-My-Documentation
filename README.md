@@ -7,8 +7,8 @@ Repositório de Anotações e Documentações pessoais sobre a linguagem ABAP da
 - [ABAP - Fundamentos](./01_fundamentos/README.md)
 - [ABAP - Conceitos](./02_conceitos/README.md)
 - [ABAP - Programação](./03_programacao/README.md)
-- [ABAP - Debug](./05_debug/README.md)
-- [ABAP - Guia Rápido (*Source Code*)](./04_sourceCode/README.md)
+- [ABAP - Debug](./04_debug/README.md)
+- [ABAP - Guia Rápido (*Source Code*)](./05_sourceCode/README.md)
 
 ##
 
