@@ -138,7 +138,7 @@ DO 10 TIMES.
 ENDDO.
 ```
 
-## Estruturas e Tabelas (internas)
+## Estruturas e Tabelas Internas
 
 **Estrutura:**
 
@@ -156,13 +156,13 @@ ls_cliente-data_nasc = '19761129'.
 ls_cliente-email = 'meuemail@gamil.com'.
 ```
 
-**Tabela (para o tipo da estrutura):**
+**Tabela Interna (para o tipo da estrutura):**
 
 ```abap
 DATA: lt_clientes TYPE TABLE OF ty_cliente.
 ```
 
-**Tabelas - comandos básicos:**
+**Tabelas Internas - comandos básicos:**
 
 ```abap
 " incluir dados na tabela clientes a partir da variável (estrutura)
@@ -174,6 +174,30 @@ APPEND VALUE ty_cliente(
   data_nasc = '19761129'
   email = 'meuemail@gamil.com'
 ) TO lt_clientes.
+
+" MODIFY c/ INDEX
+ls_cliente-nome = 'Andre'.
+ls_cliente-data_nasc = '19761129'.
+ls_cliente-email = 'andre@gmail.com'.
+MODIFY lt_clientes FROM ls_cliente INDEX 1.
+
+" MODIFY c/ WHERE
+ls_cliente-email = 'lucas@gmail.com'.
+MODIFY lt_clientes FROM ls_cliente TRANSPORTING email WHERE nome = 'Lucas'.
+
+" LOOP - ASSIGNING FIELD-SYMBOL: modificar Tabela Interna sem usar MODIFY
+LOOP AT lt_clientes ASSIGNING FIELD-SYMBOL(<fs_cliente>).
+  " Modifica linhas especificas
+  IF <fs_cliente>-nome = 'Andre'.
+    <fs_cliente>-email = 'andre@gmail.com'.
+  ELSEIF <fs_cliente>-nome = 'Lucas'.
+    <fs_cliente>-email = 'lucas@gmail.com'.
+  ENDIF.
+
+  " Modifica todas as linhas (ex. concatenando Strings)
+  <fs_cliente>-email = |{ '02' }{ <fs_cliente>-email }|.       " sintaxe p/ ABAP 7.4 ou superior
+  CONCATENATE '02' <fs_cliente>-email INTO <fs_cliente>-email. " sintaxe p/ versões mais antigas do SAP
+ENDLOOP.
 
 " Acesso Direto pelo índice (Table Expression): coluna "Nome" da linha "1"
 WRITE: / lt_clientes[ 1 ]-nome.
