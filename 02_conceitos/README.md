@@ -2,6 +2,62 @@
 
 Conceitos do Ambiente SAP.
 
+## Ambientes: SAP GUI vs. Web
+
+O ambiente de execução divide-se em:
+
+- **SAP GUI (Graphical User Interface):** É a interface visual clássica do SAP, instalada localmente no desktop (compatível com Windows, Mac e Linux);
+- **Web:** com a evolução tecnológica, o ABAP passou a suportar aplicações complexas executadas diretamente em navegadores web (como **Fiori** e **Web Dynpro**), embora a base Lógica permaneça a mesma;
+  - o *Web Dynpro* é uma tecnologia legada focada em desktops e renderização no servidor, enquanto o *Fiori* é o padrão moderno baseado em `HTML5/SAPUI5`, com design responsivo para múltiplos dispositivos e renderização no cliente;
+  - Modelo de Programação: *Web Dynpro* - uso de *Component Controller* e *View* no padrão MVC dentro do ABAP; *Fiori* - uso do modelo de programação moderno **RAP** (ABAP *RESTful Application Programming Model*) ou **CAP** (para Node.js/Java).
+
+## Tipos de Customização
+
+Existem três categorias principais de adaptação no sistema:
+
+1. **Modificação (Modification):** consiste na alteração direta do código Standard da SAP.
+    - Características: é o método menos recomendado e deve ser utilizado apenas como último recurso.
+    - Riscos: problemas de manutenção e conflitos durante atualizações (upgrades). Quando a SAP atualiza o sistema, ela pode sobrescrever o código modificado, fazendo com que a Lógica implementada seja perdida. Exige verificação rigorosa.
+2. **Melhorias do Cliente (Customer Enhancements):** são adições de Lógica em pontos específicos disponibilizados pela própria SAP, permitindo estender a funcionalidade sem alterar o núcleo do código original. Desta forma, as implementações são preservadas durante upgrades.
+    - **User Exits:** pontos de saída específicos em programas standard onde o desenvolvedor pode inserir código customizado.
+    - **BAdIs (Business Add-Ins):** baseadas em orientação a objetos, funcionam como eventos (ex: antes de salvar, durante a validação) onde se pode implementar regras de negócio adicionais.
+    - **Enhancement Spots:** pontos de ampliação (implícitos ou explícitos) que permitem inserir código customizado "no meio" do fluxo do código standard da SAP.
+3. **Desenvolvimento do Cliente (Customer Development):** refere-se à criação de novas aplicações, relatórios ou transações totalmente novas, que coexistem com o sistema standard.
+    - **Namespace:** utiliza-se o prefixo `Z` ou `Y` para identificar objetos criados pelo cliente (ex: tabelas Z, programas Z).
+    - Vantagens: Total controle sobre as funcionalidades e imunidade a alterações e upgrades da SAP, pois são objetos independentes que não conflitam com o código padrão.
+
+Para garantir a integridade / longevidade do sistema, a prioridade deve ser sempre utilizar melhorias (*Enhancements*) ou desenvolvimentos `Z`. A modificação direta do código Standard deve ser evitada devido aos altos riscos de perdas durante as atualizações de versão do SAP.
+
+## Tipos de Objetos de Desenvolvimento - RICEFW
+
+**RICEFW** no ABAP Clássico é um acrônimo fundamental no ecossistema SAP para categorizar e organizar os desenvolvimentos personalizados (*gaps*). Define a natureza técnica dos objetos criados, influencia convenções de nomenclatura e auxilia no entendimento dos requisitos de projeto. O termo refere-se aos seis principais tipos de objetos de desenvolvimento no SAP:
+
+1. **Reports (Relatórios):** são programas destinados à leitura e exibição de dados do banco de dados SAP. Eles não alteram registros, apenas processam e apresentam informações baseadas em transações;
+    - Função: criar outputs de dados (saídas visuais);
+    - Exemplos: relatórios de vendas, inventário de estoque, balanços financeiros e visualização de movimentações;
+2. **Interfaces:** permitem a comunicação e troca de dados entre o sistema SAP e sistemas externos (não-SAP);
+    - *Inbound*: dados que entram no SAP vindos de fora;
+    - *Outbound*: dados enviados do SAP para um sistema externo;
+    - Tecnologias comuns: APIs, IDocs, Web Services (SOAP/REST) e troca de arquivos.
+3. **Conversions (Conversões):** referem-se aos processos de movimentação de dados de um sistema legado para o SAP. São cruciais durante a fase inicial de implementação do SAP (*Go-Live*) para a carga inicial de dados.
+    - Processo: geralmente seguem o conceito de **ETL** (*Extract*, *Transform*, *Load* - Extrair, Transformar e Carregar);
+    - Exemplo prático: migração do cadastro de clientes ou materiais de um sistema antigo para o novo ambiente SAP;
+    - Nomenclatura: normalmente a Letra `C` é utilizada na nomenclatura técnica do objeto (ex: `ZSDC001` onde `Z` é custom, `SD` é o módulo e `C` indica conversão);
+4. **Extensions (Extensões):** também conhecidas como **Enhancements**, utilizadas para estender a funcionalidade padrão (*Standard*) do SAP sem modificar o código original do núcleo do sistema;
+    - Objetivo: implementar regras de negócio específicas da empresa que o sistema padrão não atende;
+    - Técnicas: User Exits, Customer Exits, BAdIs (Business Add-Ins) e Enhancement Points;
+5. **Forms (Formulários):** são desenvolvimentos focados na formatação de documentos para impressão ou geração de arquivos digitais (como PDFs) com Layout de negócio;
+    - Exemplos: pedidos de compra, notas fiscais, faturas, relatórios de remessa e etiquetas;
+    - Ferramentas de Desenvolvimento:
+      - **SAPscript:** tecnologia mais antiga;
+      - **Smartforms:** tecnologia intermediária, ainda muito utilizada;
+      - **Adobe Forms:** tecnologia mais recente e robusta (baseada em PDF);
+6. **Workflows:** automatizam o fluxo de processos de negócios, gerenciando a sequência de tarefas e os responsáveis por executá-las;
+    - Uso principal: processos de aprovação (ex: aprovação de pedido de compra, liberação de férias);
+    - Funcionamento: o sistema envia tarefas para a caixa de entrada (*Inbox*) dos usuários responsáveis para que tomem uma ação.
+
+O conceito **RICEFW** facilita a comunicação dentro de projetos SAP. Ao receber uma especificação funcional (EF), identificar em qual letra do acrônimo o desenvolvimento se encaixa é o primeiro passo para uma implementação mais organizada.
+
 ## O Ciclo de Desenvolvimento
 
 Para compreender a necessidade de uma ***Request***, é essencial entender o fluxo de trabalho de uma implementação:
