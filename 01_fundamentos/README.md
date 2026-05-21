@@ -42,8 +42,11 @@ As Transações funcionam como atalhos de navegação. Cada transação possui u
 - **SM30** (*Edit Table Views*): criação de interfaces para visualização e manipulação de dados de tabelas e views (visões);
 - **SE24** (*Class Builder*): criação e manutenção de Classes (OOP);
 - **SE37** (*Function Builder*): criação e testes de Módulos de Função; configuração de *Remote Call Functions* (**RFC**) para criação de APIs;
+- **SE41** (*Menu Painter*): ferramenta para criação de barras de Menus e Ferramentas (*toolbar*) em interfaces de usuários;
+- **SE51** (*Screen Painter*): ferramenta visual utilizada no desenvolvimento do *Module Pool* para desenhar a interface do usuário;
 - **SM36** (*Define Job*): criação de Jobs (processos executados em segundo plano/*background* - *server side*);
 - **SM37** (*Simple Job Selection*): monitorar a execução e visualizar os logs (*spools*) dos Jobs;
+- **SM50:** Monitora o status e tipos de *Work Processes* em tempo real;
 - **SM66** (*Work Processes*): exibe os processos em execução no servidor SAP identificando os usuários;
 - **SM12** (*Select Lock Entries*): monitora bloqueios de tabelas/registros no Banco de Dados;
 - **DBACOCKPIT** (*DBA Cockpit - System Configuration Maintenance*): painel de administração do Banco de Dados;

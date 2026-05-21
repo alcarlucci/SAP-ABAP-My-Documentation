@@ -225,6 +225,14 @@ Para vincular o documento criado na SE61 dentro da documentação padrão do obj
 
 Ao salvar e ativar, o texto se torna um hiperlink clicável que abre a documentação detalhada.
 
+## Tipos de Telas no ABAP
+
+Três tipos principais de telas que podem ser definidas em um programa ABAP:
+
+- **Telas de Seleção (Selection Screen):** telas de filtros geradas automaticamente pelo sistema através de sintaxe específica (palavras-chave) no código;
+- **Telas de Lista (List Screen):** utilizadas para a exibição de relatórios, também geradas automaticamente (comando `WRITE`; grids `ALV`);
+- **Telas Gerais (General Screens/Dynpros):** telas totalmente personalizáveis criadas e mantidas através do **Screen Painter** (SE51).
+
 ## Telas de Seleção (Selection Screens) no ABAP
 
 Uma tela de seleção é a interface primária de um relatório ou programa executável, onde o usuário insere os filtros necessários
@@ -565,6 +573,50 @@ START-OF-SELECTION.
 
 END-OF-SELECTION.
   PERFORM display_alv.
+```
+
+## Ferramenta Screen Painter (SE51)
+
+O *Screen Painter* permite o desenvolvimento de interfaces de usuário através de um editor de layout gráfico estilo *drag and drop*, disponível no SAP GUI.
+
+### Estrutura do Screen Painter
+
+Três abas principais para configuração da tela:
+
+- **Atributos (Attributes):** onde se definem as propriedades gerais da tela, como descrição e o *Screen Type*; os tipos principais são:
+  - **Normal:** tela padrão exibida na janela do SAP GUI;
+  - **Subscreen:** uma área reservada (sub-tela) que é exibida dentro de outra tela principal;
+  - **Modal Dialog Box:** *dialog* (pop-up) que se sobrepõe à tela atual;
+- **Lista de Elementos (Element List):** exibe e gerencia todos os componentes visuais inseridos na tela, como: campos de entrada/saída (*Input/Output fields*); rótulos (*Text fields*); botões (*Pushbuttons*); *Checkboxes* e *radio buttons*;
+- **Lógica de Fluxo (Flow Logic):** é a definição da lógica de processamento da tela, dividida em dois eventos principais:
+  - **PBO** (*Process Before Output*): evento processado antes da tela ser exibida ao usuário; utilizado para preparar dados e configurar atributos visuais;
+  - **PAI** (*Process After Input*): Evento processado após uma ação do usuário na tela (como clicar em um botão ou pressionar Enter); utilizado para validar dados e executar comandos.
+
+O Screen Painter é essencial para criar interfaces de usuário visuais e interativas no SAP.
+
+## Ferramenta Menu Painter (SE41)
+
+O Menu Painter (SE41) é a ferramenta usada para criar e gerenciar a interface gráfica de usuário (GUI) dos seus programas. Permite definir como o usuário interage com a tela através de barras de menu, barras de ferramentas padrão e barras de ferramentas de aplicação.
+
+### Estrutura do Menu Painter
+
+O projeta de uma interface no Menu Painter cria um **GUI Status** que é composto por três elementos principais:
+
+1. **Barra de Menus:** fica no topo da tela (ex: Arquivo, Editar, Ir Para), podendo agrupar comandos e submenus;
+2. **Barra de Ferramentas Padrão (Standard Toolbar):** contém ícones clássicos do SAP como Salvar, Voltar, Encerrar e Cancelar;
+3. **Barra de Ferramentas da Aplicação (Application Toolbar):** fica logo abaixo da barra padrão, colocando ali botões personalizados criados especificamente para a regra de negócio do seu programa.
+
+Outras funcionalidades:
+
+- **Atribuição de Funções (Function Codes):** cada botão ou opção de menu deve ter um código único (ex: `SAVE`, `EXIT`), que será capturado pelo código ABAP quando o usuário clicar nele;
+- **Mapeamento de Teclas (Function Keys):** permite associar atalhos do teclado (como `F3` para voltar ou `F8` para executar);
+- **GUI Title:** define os títulos que aparecem no topo da janela do SAP GUI.
+
+Para que a interface desenhada no Menu Painter apareça na tela, você deve chamá-la no programa ABAP usando a instrução `SET PF-STATUS`, geralmente dentro do evento `PBO` (*Process Before Output*) da tela.
+
+```abap
+SET PF-STATUS 'MEU_STATUS_PERSONALIZADO'.
+SET TITLEBAR 'MEU_TITULO'.
 ```
 
 ## JOBs
